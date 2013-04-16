@@ -1,0 +1,20 @@
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="width: 100%; background-color:yellow">
+	<tbody>
+		<tr>
+			<td rowspan="3" style="width: 20%;">
+				<img alt="" src="http://www.overstockfloorsetc.com/image/data/others/Animated-chicken-painting-huge-Happy-Easter-egg.gif" style="width: 336px; height: 288px;" /></td>
+			<td style="width: 80%;">
+				<p style="text-align: center;">
+					<span style="font-size:72px;"><span style="color: rgb(0, 0, 205);"><span style="font-family: 'comic sans ms', cursive;">Happy Easter!</span></span></span></p>
+			</td>
+		</tr>
+		<tr>
+			<td style="text-align: center;">
+				<span style="font-size:16px;"><span style="font-family: 'comic sans ms', cursive;"><strong>Store closed for easter (Sunday march/31)</strong></span></span></td>
+		</tr>
+		<tr>
+			<td>
+				<marquee behavior="slide" direction="right" loop="50" scrollamount="10"><img alt="" src="http://www.overstockfloorsetc.com/image/data/others/Moving-animated-picture-bunny-hopping-easter-eggs-basket.gif" style="width: 160px; height: 160px;" /></marquee></td>
+		</tr>
+	</tbody>
+</table>

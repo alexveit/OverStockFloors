@@ -1,0 +1,286 @@
+
+<!-- YOU CAN REMOVE THE STYLE BELOW -->
+<style type="text/css">
+p{padding:0;margin:0;}
+body{padding:0;margin:0;background-color:white;}
+input[type="text"] {
+     width: 100%; 
+     box-sizing: border-box;
+     -webkit-box-sizing:border-box;
+     -moz-box-sizing: border-box;
+}</style>
+<!-- STYLE ONLY FOR DEMO - REMOVE -->
+
+<table border="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<img src="ge_capital.jpg" alt="GE Capital">
+			</td>
+			<td align="right">
+				<b><big>APPLICATION AND CREDIT CARD ACCOUNT AGREEMENT</big></b><br />
+				<big>A credit service of GE Capital Retail Bank</big><br />
+				<b>** Married WI Residents only:</b> If you are applying for an individual account and your spouse is a WI resident, combine your spouse's financial information
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<br />
+
+<form action="geapp.php" method="POST">
+	<table border="0" width="100%" bgcolor="orange">
+		<tbody>
+			<tr>
+				<td>
+					<big>1. APPLICANT INFORMATION:</big> Please tell us about yourself. Please note that you must reside in the United States and be 18 years or older to apply.</td>
+			</tr>
+			<tr>
+				<td>
+					<table border="0" width="100%">
+						<tbody>
+							<tr>
+								<td width="40%">
+									Name (First Middle Last)</td>
+								<td width="20%">
+									Date of birth</td>
+								<td width="20%">
+									SSN</td>
+								<td width="20%">
+									Home phone #</td>
+							</tr>
+							<tr>
+								<td>
+									<input name="name" type="text" /></td>
+								<td>
+									<input name="dob" type="text" /></td>
+								<td>
+									<input name="ssn" type="text" /></td>
+								<td>
+									<input name="homenumber" type="text" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<table border="0" width="100%">
+						<tbody>
+							<tr>
+								<td width="80%">
+									Mailing address</td>
+								<td width="20%">
+									Cell/Other phone #</td>
+							</tr>
+							<tr>
+								<td>
+									<input name="mailaddress" type="text" /></td>
+								<td>
+									<input name="othernumber" type="text" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<table border="0" width="100%">
+						<tbody>
+							<tr>
+								<td width="70%">
+									If the above address is a P.O. Box, you must provide a street address for yourself or a contact person.</td>
+								<td width="15%">
+									Your Address:<input name="addressprovide" type="radio" value="youraddress" checked /></td>
+								<td width="15%">
+									Contact Person:<input name="addressprovide" type="radio" value="contactperson" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<table border="0" width="100%">
+						<tbody>
+							<tr>
+								<td width="30%">
+									Contact Person Name</td>
+								<td width="70%">
+									Street Address</td>
+							</tr>
+							<tr>
+								<td>
+									<input name="contactname" type="text" /></td>
+								<td>
+									<input name="address" type="text" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<table border="0" width="100%">
+						<tbody>
+							<tr>
+								<td valign="top">
+									Housing Information<br />
+									<select name="housing" size="1">
+										<option value="own">Own</option>
+										<option value="rent">Rent</option>
+										<option value="parents">Parents/Relatives</option>
+										<option value="other">Other</option>
+									</select>
+								</td>
+								<td width="40%">
+									<table border="0" width="100%">
+										<tbody>
+											<tr>
+												<td valign="top" width="65%">
+													Alimony, child support or separate maintenance income need not be included unless relied upon for credit. You may include the monthly amount that you have available to spend from your assets.</td>
+												<td valign="top" width="35%">
+													Montly Net Inconme From All Sources<br />
+													<input name="netincome" type="text" /></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td valign="top" width="25%">
+									Employer's phone #<br />
+									<input name="employernumber" type="text" /></td>
+								<td valign="top" width="25%">
+									Relative phone #<br />
+									<input name="relativenumber" type="text" /></td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									Email</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<input name="email" type="text" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<input type="submit" value="Send" /><input type="reset" value="Clear" />
+				</td>
+			</tr>
+			<tr>
+				<td bgcolor="white">*You authorize GE Capital Retail Bank ("GECRB") to contact you at each phone number you have provided. By providing a cell phone number and/or email address, you agree to receive special offers, updates and account information, including text messages from GECRB and the dealers/merchants/retailers that accept the Card. Standard text messaging rates may apply.</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<br />
+	
+	<table border="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<big>2. JOINT APPLICANT INFORMATION:</big> An additional card will be issued to the person indicated below. The applicant (and joint applicant, if any) will be liable for all transactions made on the account including those made by any authorized user. JOINT APPLICANT: You agree that we may send notices to you and/or applicant's address, regardless of whether you live at that address.</td>
+		</tr>
+		<tr>
+			<td>
+				
+				<table border="0" width="100%">
+					<tbody>
+						<tr>
+							<td width="40%">
+								Name (First Middle Last)</td>
+							<td width="20%">
+								Date of birth</td>
+							<td width="20%">
+								SSN</td>
+							<td width="20%">
+								Home phone #</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="name2" type="text" /></td>
+							<td>
+								<input name="dob2" type="text" /></td>
+							<td>
+								<input name="ssn2" type="text" /></td>
+							<td>
+								<input name="homenumber2" type="text" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<table border="0" width="100%">
+					<tbody>
+						<tr>
+							<td width="80%">
+								Mailing address</td>
+							<td width="20%">
+								Cell/Other phone #</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="mailaddress2" type="text" /></td>
+							<td>
+								<input name="othernumber2" type="text" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<table border="0" width="100%">
+					<tbody>
+						<tr>
+							<td width="70%">
+								If the above address is a P.O. Box, you must provide a street address for yourself or a contact person.</td>
+							<td width="15%">
+								Your Address:<input name="addressprovide2" type="radio" value="youraddress" checked /></td>
+							<td width="15%">
+								Contact Person:<input name="addressprovide2" type="radio" value="contactpersonaddress" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<table border="0" width="100%">
+					<tbody>
+						<tr>
+							<td width="30%">
+								Contact Person Name</td>
+							<td width="70%">
+								Street Address</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="contactname2" type="text" /></td>
+							<td>
+								<input name="address2" type="text" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<table border="0" width="100%">
+					<tbody>
+						<tr>
+							<td valign="top">
+								Housing Information<br />
+								<select name="housing2" size="1">
+									<option value="own">Own</option>
+									<option value="rent">Rent</option>
+									<option value="parents">Parents/Relatives</option>
+									<option value="other">Other</option>
+								</select>
+							</td>
+							<td width="40%">
+								<table border="0" width="100%">
+									<tbody>
+										<tr>
+											<td valign="top" width="65%">
+												Alimony, child support or separate maintenance income need not be included unless relied upon for credit. You may include the monthly amount that you have available to spend from your assets.</td>
+											<td valign="top" width="35%">
+												Montly Net Inconme From All Sources<br />
+												<input name="netincome2" type="text" /></td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+							<td valign="top" width="25%">
+								Employer's phone #<br />
+								<input name="employernumber2" type="text" /></td>
+							<td valign="top" width="25%">
+								Relative phone #<br />
+								<input name="relativenumber2" type="text" /></td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								Email</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input name="email2" type="text" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<input type="submit" value="Send" /><input type="reset" value="Clear" />
+				
+			</td>
+		</tr>
+	</tbody>
+</table>
+</form>
