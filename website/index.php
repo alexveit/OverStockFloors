@@ -238,5 +238,10 @@ $controller->dispatch($action, new Action('error/not_found'));
 // Output
 $response->output();
 
-echo "<div style=\"position:absolute; left:0px; top:150px;\"><a href=\"http://www.overstockfloorsetc.com/index.php?route=product/category&path=61_118\"><img src=\"images/news1.gif\" alt=\"News\" width=\"182\" height=\"160\"></a></div>";
+require_once('mobilechecker.php');
+
+$checker = new MobileChecker();
+
+if(!$checker->is_mobile())
+	echo "<div style=\"position:absolute; left:0px; top:150px;\"><a href=\"http://www.overstockfloorsetc.com/index.php?route=product/category&path=61_118\"><img src=\"images/news1.gif\" alt=\"News\" width=\"182\" height=\"160\"></a></div>";
 ?>
