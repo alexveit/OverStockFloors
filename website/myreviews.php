@@ -1,17 +1,56 @@
+<html>
+<head>
 <style>
-th
-{
-	background-color:#FDD017;
-	text-align:left;
-}
-input[type="text"]
-{
-	width: 100%; 
-	box-sizing: border-box;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing: border-box;
-}
+	th
+	{
+		background-color:#FDD017;
+		text-align:left;
+	}
+	
+	input[type="text"]
+	{
+		width: 100%; 
+		box-sizing: border-box;
+		-webkit-box-sizing:border-box;
+		-moz-box-sizing: border-box;
+	}
+	
+	body
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 12px;
+	}
 </style>
+
+<script>
+function validateForm()
+{
+	var x=document.forms["myForm"]["name"].value;
+	if (x==null || x=="")
+	{
+		alert("Name must be filled out");
+		return false;
+	}
+	
+	x=document.forms["myForm"]["phone"].value;
+	if (x==null || x=="")
+	{
+		alert("Phone # must be filled out");
+		return false;
+	}
+	
+	x=document.forms["myForm"]["email"].value;
+	if (x==null || x=="")
+	{
+		alert("Email must be filled out");
+		return false;
+	}
+}
+</script>
+</head>
+
+<body>
+
 
 <?php
 
@@ -79,7 +118,7 @@ class Review
 }
 ?>
 
-<form action="procreview.php" method="POST">
+<form name="myForm" action="procreview.php" onsubmit="return validateForm()" method="POST">
 	<table border="0" style="width:100%;">
 		<tbody>
 			<tr>
@@ -132,7 +171,7 @@ if (mysqli_connect_errno($con))
 	echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
 
-$result = mysqli_query($con,"SELECT * FROM myreviews");
+$result = mysqli_query($con,"SELECT * FROM myreviews ORDER BY review_date DESC");
 
 echo "<table border=\"0\" width=\"100%\"> <tbody>";
 
@@ -148,7 +187,8 @@ while($row = mysqli_fetch_array($result))
 	echo "</tbody></table>";
 }
 
-
-
 mysqli_close($con);
+
 ?>
+</body>
+</html>

@@ -1,3 +1,16 @@
+<html>
+<head>
+<style>
+	body
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 12px;
+	}
+</style>
+
+</head>
+
+<body>
 <?php
 
 require_once('../config.php');
@@ -27,7 +40,7 @@ class Info
 		date_default_timezone_set('America/New_York');
 		$this->datetime = getdate();
 		
-		$this->fields = "review_name, review_phone, review_quality, review_appeal, review_service, review_date, review_review";
+		$this->fields = "review_name, review_phone, review_email, review_quality, review_appeal, review_service, review_date, review_review";
 	}
 	
 	public function proc()
@@ -64,9 +77,12 @@ class Info
 		default: $serv = 4; break;
 		}
 		
-		$vals = "'" . $this->name . "', '" . $this->phone . "', " . $quali . ", ";
-		$vals .= $appel . ", " . $serv . ", '" . $dt . "', '" . $this->remarks . "'";
+		$vals = "'" . $this->name . "', '" . $this->phone . "', '" . $this->email . "', ";
+		$vals .= $quali . ", " . $appel . ", " . $serv . ", '" . $dt . "', '" . $this->remarks . "'";
+		
 		$ins = "INSERT INTO myreviews (" . $this->fields . ") VALUES (" . $vals . ");";
+		
+		echo $ins;
 		
 		$con = mysqli_connect(DB_HOSTNAME,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
 
@@ -99,3 +115,5 @@ $info = new Info();
 $info->proc();
 
 ?>
+</body>
+</html>
