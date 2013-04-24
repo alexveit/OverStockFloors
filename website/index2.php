@@ -243,5 +243,4 @@ require_once('mobilechecker.php');
 $checker = new MobileChecker();
 
 if(!$checker->is_mobile())
-	echo "<div style=\"position:absolute; left:0px; top:150px;\"><a href=\"http://www.overstockfloorsetc.com/index.php?route=product/category&path=61_118\"><img src=\"images/news1.gif\" alt=\"News\" width=\"182\" height=\"160\"></a></div>";
-?>
+	echo "<div style=\"position:absolute; left:0px; top:150px; z-index:1000;\"><a href=\"http://www.overstockfloorsetc.com/index.php?route=product/category&path=118\"><img src=\"images/news1.gif\" name=\"image_name\" onmouseover=\"image_name.width='200';image_name.height='176';\" onmouseout=\"image_name.width='182';image_name.height='160';\" alt=\"News\" width=\"182\" height=\"160\"></a></div>";
