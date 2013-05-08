@@ -23,24 +23,29 @@
 </style>
 
 <script>
+function isWhitespaceNotEmpty(text)
+{
+	return text.length > 0 && !/[^\s]/.test(text);
+}
+
 function validateForm()
 {
 	var x=document.forms["myForm"]["name"].value;
-	if (x==null || x=="")
+	if (x==null || x=="" || isWhitespaceNotEmpty(x))
 	{
 		alert("Name must be filled out");
 		return false;
 	}
 	
 	x=document.forms["myForm"]["phone"].value;
-	if (x==null || x=="")
+	if (x==null || x=="" || isWhitespaceNotEmpty(x))
 	{
 		alert("Phone # must be filled out");
 		return false;
 	}
 	
 	x=document.forms["myForm"]["email"].value;
-	if (x==null || x=="")
+	if (x==null || x=="" || isWhitespaceNotEmpty(x))
 	{
 		alert("Email must be filled out");
 		return false;
@@ -108,6 +113,14 @@ class Review
 	public function get_service() { return $this->assess(3); }
 	
 	public function get_review() { return $this->_row['review_review']; }
+	
+	public function hide()
+	{
+		if($this->_row['review_hide'] == 1)
+			return true;
+			
+		return false;
+	}
 	
 	public function get_timestamp()
 	{
@@ -178,13 +191,17 @@ echo "<table border=\"0\" width=\"100%\"> <tbody>";
 while($row = mysqli_fetch_array($result))
 {
 	$rev = new Review($row);
-	echo "<table style=\"border-style:solid; border-width:1px;\"border=\"0\" width=\"100%\"> <tbody>";
-	echo "<tr><th colspan=\"3\"><table width=\"100%\"> <tbody><tr><td>" . $rev->get_name() . "</td>";
-	echo "<td style=\"text-align: right;\">" . $rev->get_timestamp() ."</td></tr></tbody></table></tr>";
-	echo "<tr><td style=\"width:33%; text-align:center\">Quality: " . $rev->get_quality() . "</td><td style=\"width:33%; text-align:center\">Appeal: " . $rev->get_appeal() . "</td><td style=\"width:33%; text-align:center\">Service: " . $rev->get_service() . "</td></tr>";
-	//echo "<tr><td colspan=\"3\">Review:</td></tr>";
-	echo "<tr><td colspan=\"3\"><table width=\"100%\"> <tbody><tr><td style=\"border:1px solid #FDD017;\">" . $rev->get_review() . "</td></tr></tbody></table></td></tr>";
-	echo "</tbody></table>";
+	
+	if(!$rev->hide())
+	{
+		echo "<table style=\"border-style:solid; border-width:1px;\"border=\"0\" width=\"100%\"> <tbody>";
+		echo "<tr><th colspan=\"3\"><table width=\"100%\"> <tbody><tr><td>" . $rev->get_name() . "</td>";
+		echo "<td style=\"text-align: right;\">" . $rev->get_timestamp() ."</td></tr></tbody></table></tr>";
+		echo "<tr><td style=\"width:33%; text-align:center\">Quality: " . $rev->get_quality() . "</td><td style=\"width:33%; text-align:center\">Appeal: " . $rev->get_appeal() . "</td><td style=\"width:33%; text-align:center\">Service: " . $rev->get_service() . "</td></tr>";
+		//echo "<tr><td colspan=\"3\">Review:</td></tr>";
+		echo "<tr><td colspan=\"3\"><table width=\"100%\"> <tbody><tr><td style=\"border:1px solid #FDD017;\">" . $rev->get_review() . "</td></tr></tbody></table></td></tr>";
+		echo "</tbody></table>";
+	}
 }
 
 mysqli_close($con);

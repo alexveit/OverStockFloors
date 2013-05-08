@@ -1,0 +1,82 @@
+<html>
+	
+	<script>
+			
+		function Measurement(input)
+		{
+			var n = input.split("x");
+			this.width = parseInt(n[0], 10);
+			this.length = parseInt(n[1], 10);
+		}
+		
+		var mymeasurements = new Array();
+		
+		function isWhitespaceNotEmpty(text)
+		{
+			return text.length > 0 && !/[^\s]/.test(text);
+		}
+		
+		function add_measurement()
+		{
+			var val = document.forms["myForm"]["measurement"].value;
+			
+			if (val==null || val=="" || isWhitespaceNotEmpty(val))
+			{
+				return false;
+			}
+			
+			var newNode = document.createElement("li");
+			var newContent = document.createTextNode(val);
+			var my_ul = document.getElementById("mylist");
+			
+			newNode.appendChild(newContent);
+			
+			document.body.insertBefore(newNode, my_ul);
+			document.forms["myForm"]["measurement"].value = "";
+			
+			mymeasurements.push(new Measurement(val));
+		}
+		
+		function calc()
+		{
+			var w_count = 0;
+			var l_count = 0;
+			for (var i=0; i < mymeasurements.length; i++)
+			{
+				w_count += mymeasurements[i].width;
+				l_count += mymeasurements[i].length;
+			}
+			
+			var str = "width = ";
+			
+			str = str.concat(w_count.toString());
+			str = str.concat(", length = ");
+			str = str.concat(l_count.toString());
+			
+			var newDiv = document.createElement("div");
+			var newContent = document.createTextNode(str);
+			var my_div = document.getElementById("mydiv");
+			
+			
+			newDiv.appendChild(newContent);
+		
+			document.body.insertBefore(newDiv, my_div);
+		}
+		
+	</script>
+	
+	<body>
+		
+		<form name="myForm">
+			<input id="measurement" type="text" />
+			<input type="button" onclick="add_measurement()" value="add measurement">
+			<input type="button" onclick="calc()" value="calculate">
+		</form>
+		
+		<ul id='mylist'></ul>
+		
+		<div id='mydiv'></div>
+		
+	</body>
+
+</html>

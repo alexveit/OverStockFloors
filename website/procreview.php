@@ -81,9 +81,7 @@ class Info
 		$vals .= $quali . ", " . $appel . ", " . $serv . ", '" . $dt . "', '" . $this->remarks . "'";
 		
 		$ins = "INSERT INTO myreviews (" . $this->fields . ") VALUES (" . $vals . ");";
-		
-		echo $ins;
-		
+			
 		$con = mysqli_connect(DB_HOSTNAME,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
 
 		// Check connection
