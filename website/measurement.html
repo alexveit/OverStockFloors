@@ -63,6 +63,45 @@
 			document.body.insertBefore(newDiv, my_div);
 		}
 		
+		function addTable()
+		{
+			/*var c, r, t;
+			t = document.createElement('table');
+			r = t.insertRow(0); 
+			c = r.insertCell(0);
+			c.innerHTML = 123;
+			c = r.insertCell(1);
+			c.innerHTML = 456;
+			document.getElementById("addtable").appendChild(t);*/
+			
+			var html = "<table border=\"1\" style=\"width:300px;\"><tr>";
+			html = html.concat("<td style=\"width:50%; text-align:center;\">Standard</td>");
+			html = html.concat("<td style=\"width:50%; text-align:center;\">Needs</td></tr>");
+			
+			
+			for (var i=0; i < mymeasurements.length; i++)
+			{
+				html = html.concat("<td style=\"text-align:center;\">");
+				
+				if(mymeasurements[i].width > 12)
+				{
+					var temp = mymeasurements[i].width - 12;
+					html = html.concat(temp.toString());		
+				}
+				else
+				{
+					html = html.concat(mymeasurements[i].width.toString());		
+				}
+				
+				html = html.concat("</td></tr>");
+				
+			}
+			
+			html = html.concat("</table>");
+			
+			document.getElementById("addtable").innerHTML = html;
+		}
+		
 	</script>
 	
 	<body>
@@ -70,12 +109,14 @@
 		<form name="myForm">
 			<input id="measurement" type="text" />
 			<input type="button" onclick="add_measurement()" value="add measurement">
-			<input type="button" onclick="calc()" value="calculate">
+			<input type="button" onclick="addTable()" value="calculate">
 		</form>
 		
 		<ul id='mylist'></ul>
 		
 		<div id='mydiv'></div>
+			
+		<div id="addtable"></div>
 		
 	</body>
 

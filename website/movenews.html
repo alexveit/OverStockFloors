@@ -1,0 +1,62 @@
+
+<script type="text/javascript">
+
+	var userWidth = window.screen.width;
+	
+	var xorvar = true;
+	
+	function moveRight()
+	{
+		var pp = document.getElementById("newsimage");
+		var lft = parseInt(pp.style.left);
+		var tim = setTimeout("moveRight()",5);  // 20 controls the speed
+		lft = lft+5;  // move by 5 pixels
+		pp.style.left = lft+"px";
+		if (lft > -5) // left edge of image past the right edge of screen
+		{
+			//pp.style.left = -200;  // back to the left
+			clearTimeout(tim);
+		}
+	}
+	
+	function moveLeft()
+	{
+		var pp = document.getElementById("newsimage");
+		var lft = parseInt(pp.style.left);
+		var tim = setTimeout("moveLeft()",5);  // 20 controls the speed
+		lft = lft-5;  // move by 5 pixels
+		pp.style.left = lft+"px";
+		if (lft < -180) // left edge of image past the right edge of screen
+		{
+			//pp.style.left = -200;  // back to the left
+			clearTimeout(tim);
+		}
+	}
+	
+	function move()
+	{
+		if(xorvar)
+		{
+			moveLeft();
+		}
+		else
+		{
+			moveRight();
+		}
+		xorvar = !xorvar;
+	}
+	
+</script>
+
+
+<table border="0" id="newsimage" style="position:absolute; left:0px; top:150px; z-index:1000;">
+	<tbody>
+		<tr>
+			<td><a href="http://www.overstockfloorsetc.com/index.php?route=product/category&path=118">
+					<img src="images/news1.gif" alt="News" width="182" height="160">
+				</a>
+			</td>
+			<td><img src="images/left_arrow2.png" name="image_name"  onclick = "move()" onmouseover="image_name.width='30';image_name.height='30';" onmouseout="image_name.width='18';image_name.height='18';"></td>
+		</tr>
+	</tbody>
+</table>

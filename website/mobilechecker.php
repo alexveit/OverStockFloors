@@ -53,10 +53,11 @@
 	{
 		if(!$this->is_mobile())
 		{
-			echo "<div style=\"position:absolute; left:0px; top:150px; z-index:1000;\">";
+			/*echo "<div style=\"position:absolute; left:0px; top:150px; z-index:1000;\">";
 			echo "<a href=\"http://www.overstockfloorsetc.com/index.php?route=product/category&path=118\">";
 			echo "<img src=\"images/news1.gif\" name=\"image_name\" onmouseover=\"image_name.width='200';image_name.height='176';\" onmouseout=\"image_name.width='182';image_name.height='160';\" alt=\"News\" width=\"182\" height=\"160\">";
-			echo "</a></div>";
+			echo "</a></div>";*/
+			include 'movenews.html';
 		}
 	}
 };
