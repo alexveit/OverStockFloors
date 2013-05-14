@@ -1,9 +1,10 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<script>
 			
 			var mymeasurements = new Array();
-						
+			
 			function Measurement(input)
 			{
 				if (typeof(input)==='string')
@@ -11,8 +12,6 @@
 					var n;
 					if(input.indexOf("x") !== -1)
 						n = input.split("x");
-					else if(input.indexOf(".") !== -1)
-						n = input.split(".");
 					else if(input.indexOf("/") !== -1)
 						n = input.split("/");
 					else if(input.indexOf("+") !== -1)
@@ -20,8 +19,8 @@
 					else if(input.indexOf(":") !== -1)
 						n = input.split(":");
 
-					this.width = parseInt(n[0], 10);
-					this.length = parseInt(n[1], 10);
+					this.width = parseFloat(n[0], 10);
+					this.length = parseFloat(n[1], 10);
 				}
 				else
 				{
@@ -33,7 +32,7 @@
 			Measurement.prototype.add_width = function(width) { this.width += width; }
 			
 			Measurement.prototype.toString = function() { return this.width.toString() + "x" + this.length.toString(); }
-						
+			
 			function isWhitespaceNotEmpty(text) { return text.length > 0 && !/[^\s]/.test(text); }
 			
 			var standard;
@@ -70,9 +69,18 @@
 					html = html.concat("</tr>");
 				}
 				
-				html = html.concat("</tbody></table>");
+				var len = 0;
+				for(var i = 0; i < standard.length; i++)
+				{
+					len += standard[i].length;
+				}
 				
-				document.getElementById("addtable").innerHTML = html;
+				if(len > 0)
+				{
+					html = html.concat("<tr style=\"background-color:yellow;\"><td style=\"text-align:center;\">12x" + len + "</td></tr>");
+					html = html.concat("</tbody></table>");
+					document.getElementById("addtable").innerHTML = html;
+				}
 			}
 			
 			function split_standard_from_needs()
@@ -81,11 +89,11 @@
 				{
 					var temp_w = mymeasurements[i].width;
 					
-					if(temp_w < 12)
+					if(temp_w < 12.0)
 					{
 						needs.push(new Measurement(mymeasurements[i]));
 					}
-					else if(temp_w == 12)
+					else if(temp_w >= 12.0 && temp_w < 13.0)
 					{
 						standard.push(new Measurement(mymeasurements[i]));
 					}
@@ -94,15 +102,16 @@
 						var good = false;
 						while(!good)
 						{
-							if(temp_w > 12)
-							{
-								standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
-								temp_w -= 12;
-							}
-							else if(temp_w == 12)
+							
+							if(temp_w >= 12.0 && temp_w < 13.0)
 							{
 								standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
 								good = true;
+							}
+							else if(temp_w > 12.0)
+							{
+								standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
+								temp_w -= 12;
 							}
 							else
 							{
@@ -131,27 +140,42 @@
 			
 			function consolidate_standards()
 			{
+				var round = document.getElementById("round").checked;
 				for (var i = 0; i < needs.length; i++)
 				{
-					if(needs[i].width == 12)
+					if(needs[i].width >= 11.0 && needs[i].width < 12.0 && round)
+					{
+						needs[i].width = 12;
+						standard.push(new Measurement(needs[i]));
+						needs.splice(i, 1);
+					}
+					else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
 					{
 						standard.push(new Measurement(needs[i]));
+						needs.splice(i, 1);
 					}
-					else if(needs[i].width > 12)
+					else if(needs[i].width > 12.0)
 					{
 						var good = false;
 						while(!good)
 						{
-							if(needs[i].width > 12)
+							if(needs[i].width >= 11.0 && needs[i].width < 12.0 && round)
 							{
-								standard.push(new Measurement("12x" + needs[i].length.toString()));
-								needs[i].width -= 12;
-							}
-							else if(needs[i].width == 12)
-							{
-								standard.push(new Measurement("12x" + needs[i].length.toString()));
+								needs[i].width = 12;
+								standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
 								needs.splice(i, 1);
 								good = true;
+							}
+							else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
+							{
+								standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+								needs.splice(i, 1);
+								good = true;
+							}
+							else if(needs[i].width > 12.0)
+							{
+								standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+								needs[i].width -= 12;
 							}
 							else
 							{
@@ -161,7 +185,61 @@
 					}
 				}
 			}
-						
+			
+			function calc_totals()
+			{
+				var ordered_needs = new Array()
+				
+				for(var i = 0; i < needs.length; i++)
+				{
+					ordered_needs.push(new Measurement(needs[i]));
+				}
+				
+				ordered_needs.sort(function(a,b) { return b.length - a.length; } );
+				
+				var remaining_w = 12;
+								
+				var good = false;
+				
+				var waste = 0;
+				
+				var acounted_for = new Array();
+				
+				var grid = new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+								
+				//needs word not correct yet
+				for(var i = 0; i < ordered_needs.length; i++)
+				{
+					if(ordered_needs[i].width <= remaining_w)
+					{
+						acounted_for.push(new Measurement(ordered_needs[i]));
+						var len = 0;
+						for(var j = 12-remaining_w, k = 0; k < ordered_needs[i].width; j++, k++)
+						{
+							if(k == 0)
+							{
+								grid[j] += parseInt(ordered_needs[i].length);
+								len = grid[j];
+							}
+							else
+							{
+								waste = len - grid[j];
+								grid[j] = len;
+							}
+						}
+						remaining_w -= ordered_needs[i].width;
+						ordered_needs.splice(i, 1);
+						i--;
+					}
+					else
+					{
+						remaining_w = 12;
+						i--;
+					}
+				}
+				
+			}
+			
 			function calculate()
 			{
 				standard = new Array();
@@ -171,7 +249,9 @@
 				aggregate_same_lengths();
 				consolidate_standards();
 				add_table();
-
+				
+				calc_totals();
+				
 			}
 			
 			function add_measurement()
@@ -224,20 +304,29 @@
 			<tbody>
 				<tr>
 					<td style="width:210px;">
-						Use x . / + or : to separate measurements<br /><br />
-						Valid examples are:<br />
+						Use x / + or : to separate measurements. The maximum precision is by quarters<br />
 						<table style="width:100%;">
 							<tbody>
 								<tr>
-									<td style="text-align:center;">15x7</td>
-									<td style="text-align:left;">17.9</td>
+									<td style="text-align:center;">1/4 = 0.25</td>
+									<td style="text-align:left;">2/4 = 0.5</td>
 								</tr>
 								<tr>
-									<td style="text-align:center;">10/8</td>
+									<td style="text-align:center;">1/2 = 0.5</td>
+									<td style="text-align:left;">3/4 = 0.75</td>
+								</tr>
+							</tbody>
+						</table>
+						Valid input examples are:<br />
+						<table style="width:100%;">
+							<tbody>
+								<tr>
+									<td style="text-align:center;">15.75x7.5</td>
 									<td style="text-align:left;">15+10</td>
 								</tr>
 								<tr>
-									<td style="text-align:center;">13:12</td>
+									<td style="text-align:center;">10/8.25</td>
+									<td style="text-align:left;">13.5:12</td>
 								</tr>
 							</tbody>
 						</table>
@@ -249,6 +338,9 @@
 		<form name="myForm">
 			<table>
 				<tbody>
+					<tr>
+						<td colspan="2"><input type="checkbox" id="round" value="Bike">Round 11' to 12' when calculating</td>
+					</tr>
 					<tr>
 						<td><input id="measurement" type="text" size="6" onkeypress="return checkEnter(event)" /></td>
 						<td style="text-align:center;"><input type="button" onclick="add_measurement()" value="add measurement"></td>
