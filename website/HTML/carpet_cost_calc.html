@@ -1,0 +1,118 @@
+<script>
+
+function calc_click()
+{
+	var width = document.getElementById("fwidth").value;
+	if (width==null || width=="" || isWhitespaceNotEmpty(width))
+	{
+		return false;
+	}
+	
+	var length = document.getElementById("flength").value;
+	if (length==null || length=="" || isWhitespaceNotEmpty(length))
+	{
+		return false;
+	}
+	
+	var cost = document.getElementById("fcost").value;
+	if (cost==null || cost=="" || isWhitespaceNotEmpty(cost))
+	{
+		return false;
+	}
+	
+	calculate(parseFloat(width),parseFloat(length),parseFloat(cost));
+}
+
+function calculate(width,length,cost)
+{
+
+	if(document.getElementById("typew").selectedIndex == 1)
+		width /= 12.0;
+		
+	if(document.getElementById("typel").selectedIndex == 1)
+		length /= 12.0;
+		
+		
+	var total = (width * length);
+	var estimate = (total * cost)/9.0;
+	
+	document.getElementById("festimate").innerHTML = estimate.toFixed(2);
+}
+
+function isWhitespaceNotEmpty(text) { return text.length > 0 && !/[^\s]/.test(text); }
+
+function keyHandler(e)
+{
+	e = e || event;
+	var txtArea = /textarea/i.test((e.target || e.srcElement).tagName);
+	var is_enter = (e.keyCode || e.which || e.charCode || 0) !== 13;
+	
+	document.getElementById("yard").innerHTML = "cool";
+	
+	return txtArea || is_enter;
+}
+
+</script>
+<p>
+	<span style="font-size:16px;"><strong>Remember!<br />
+	Our prices are by the square yard!</strong></span></p>
+<table border="0">
+	<tbody>
+		<tr>
+			<td>
+				Width of Room in <select id="typew"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+			<td>
+				<input id="fwidth" type="text" /></td>
+		</tr>
+		<tr>
+			<td>
+				Length of Room in <select id="typel"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+			<td>
+				<input id="flength" type="text" /></td>
+		</tr>
+		<tr>
+			<td>
+				Carpet Cost Per Sq Yd:</td>
+			<td>
+				<input id="fcost" type="text" onkeypress="return keyHandler(event)" size="4"/> <span id="yard"></span></td>
+		</tr>
+		<!-- <tr>
+		<td colspan="2">
+			<strong>Installation Choices</strong><br>
+			<ul>
+				<li>A - Room Is Empty</li>
+				<li>B - Removed Old Carpet But No Furniture</li>
+				<li>C - We Live Here Handle Everything</li>
+				<li>D - No Thanks We Will Install Ourselves</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>Installation</td>
+		<td>
+			<select id="installation">
+				<option value="A">A</option>
+				<option value="B">B</option>
+				<option value="C">C</option>
+				<option value="D">D</option>
+			</select>
+		</td>
+	</tr> -->
+		<tr>
+			<td colspan="2">
+				&nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+				Your Estimated Cost:</td>
+			<td>
+				<span id="festimate">0.00</span></td>
+		</tr>
+		<tr>
+			<td>
+				&nbsp;</td>
+			<td style="text-align:center">
+				<input onclick="calc_click()" type="button" value="Calculate" /></td>
+		</tr>
+	</tbody>
+</table>
