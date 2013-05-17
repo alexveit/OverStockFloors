@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -122,7 +123,7 @@ function add_table(max)
 		
 		sq_yd = (used_sqr_ft/9);
 		
-		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Total:</strong></td><td style=\"background-color:blue; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + used_sqr_ft + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
+		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Actual:</strong></td><td style=\"background-color:blue; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + used_sqr_ft + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		sq_yd = (waist/9);
 		
@@ -551,7 +552,7 @@ function load()
 {
 	mymeasurements = new Array();
 	check_device();
-	//load_debub_input();
+	load_debub_input();
 	document.getElementById("measurement").focus();
 }
 
@@ -680,7 +681,7 @@ window.mobilecheck = function() {
 <tbody>
 	<tr>
 		<td style="text-align:center;">
-			<p>Version 1.0</p>
+			<p>Version 1.2</p>
 			<strong>Maximum precision x/4</strong><br />
 			<table style="width:100%;" border="0">
 				<tbody>
@@ -715,7 +716,7 @@ window.mobilecheck = function() {
 						<td style="text-align:center; width:50%;">15+10</td>
 					</tr>
 					<tr>
-						<td style="text-align:center; width:50%;">10/8.25</td>
+						<td style="text-align:center; width:50%;">10*8.25</td>
 						<td style="text-align:center; width:50%;">13.5:12</td>
 					</tr>
 				</tbody>
@@ -750,7 +751,7 @@ window.mobilecheck = function() {
 			</td>
 		</tr>
 		<tr>
-			<td style="text-align:right; width:60%;"><input id="measurement" type="text" size="13" onkeypress="return checkEnter(event)" /></td>
+			<td style="text-align:right; width:60%;">W<>L:<input id="measurement" type="text" size="10" onkeypress="return checkEnter(event)" /></td>
 			<td style="text-align:center; width:40%;"><input type="button" onclick="retrieve_measurement()" value="    Add    "></td>
 		</tr>
 		<tr>
@@ -759,7 +760,7 @@ window.mobilecheck = function() {
 		</tr>
 		<tr>
 			<td style="text-align:right;">Cost: <input id="cost" type="text" size="5" onkeypress="return checkEnter(event)"/></td>
-			<td style="text-align:center;"><input type="button" onclick="refresh_window()" value="   Clear   "></td>
+			
 		</tr>
 		<tr>
 			<td style="text-align:right;">
@@ -802,6 +803,7 @@ window.mobilecheck = function() {
 					</tr>
 				</table>
 			</td>
+			<td style="text-align:center;"><input type="button" onclick="refresh_window()" value="   Clear   "></td>
 		</tr>
 	</tbody>
 </table>

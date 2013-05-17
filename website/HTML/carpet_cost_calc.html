@@ -7,19 +7,19 @@ function calc_click()
 	{
 		return false;
 	}
-	
+
 	var length = document.getElementById("flength").value;
 	if (length==null || length=="" || isWhitespaceNotEmpty(length))
 	{
 		return false;
 	}
-	
+
 	var cost = document.getElementById("fcost").value;
 	if (cost==null || cost=="" || isWhitespaceNotEmpty(cost))
 	{
 		return false;
 	}
-	
+
 	calculate(parseFloat(width),parseFloat(length),parseFloat(cost));
 }
 
@@ -28,14 +28,14 @@ function calculate(width,length,cost)
 
 	if(document.getElementById("typew").selectedIndex == 1)
 		width /= 12.0;
-		
+
 	if(document.getElementById("typel").selectedIndex == 1)
 		length /= 12.0;
-		
-		
+
+
 	var total = (width * length);
 	var estimate = (total * cost)/9.0;
-	
+
 	document.getElementById("festimate").innerHTML = estimate.toFixed(2);
 }
 
@@ -47,72 +47,116 @@ function keyHandler(e)
 	var txtArea = /textarea/i.test((e.target || e.srcElement).tagName);
 	var is_enter = (e.keyCode || e.which || e.charCode || 0) !== 13;
 	
-	document.getElementById("yard").innerHTML = "cool";
+	var value = document.getElementById("fcost").value;
+	
+	value.concat(String.fromCharCode(e.keyCode));
+	
+	var yard = parseFloat(value)/9.0;
+	
+	if(!isNaN(yard))
+	{
+		document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ " + yard.toFixed(2) + " / ft&sup2";
+	}
+	else
+	{
+		document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2";
+	}
+	
+	
 	
 	return txtArea || is_enter;
 }
 
 </script>
-<p>
-	<span style="font-size:16px;"><strong>Remember!<br />
-	Our prices are by the square yard!</strong></span></p>
-<table border="0">
-	<tbody>
-		<tr>
-			<td>
-				Width of Room in <select id="typew"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
-			<td>
-				<input id="fwidth" type="text" /></td>
-		</tr>
-		<tr>
-			<td>
-				Length of Room in <select id="typel"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
-			<td>
-				<input id="flength" type="text" /></td>
-		</tr>
-		<tr>
-			<td>
-				Carpet Cost Per Sq Yd:</td>
-			<td>
-				<input id="fcost" type="text" onkeypress="return keyHandler(event)" size="4"/> <span id="yard"></span></td>
-		</tr>
-		<!-- <tr>
-		<td colspan="2">
-			<strong>Installation Choices</strong><br>
-			<ul>
-				<li>A - Room Is Empty</li>
-				<li>B - Removed Old Carpet But No Furniture</li>
-				<li>C - We Live Here Handle Everything</li>
-				<li>D - No Thanks We Will Install Ourselves</li>
-			</ul>
-		</td>
-	</tr>
-	<tr>
-		<td>Installation</td>
-		<td>
-			<select id="installation">
-				<option value="A">A</option>
-				<option value="B">B</option>
-				<option value="C">C</option>
-				<option value="D">D</option>
-			</select>
-		</td>
-	</tr> -->
-		<tr>
+
+<div style="position:relative; float: left;">
+	<p>
+		<span style="font-size:16px;"><strong>Remember!<br />
+		Our prices are by the square yard!</strong></span></p>
+	<table border="0">
+		<tbody>
+			<tr>
+				<td>
+					Width of Room in <select id="typew" tabindex="-1"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+				<td>
+					<input id="fwidth" type="text" /></td>
+			</tr>
+			<tr>
+				<td>
+					Length of Room in <select id="typel" tabindex="-1"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+				<td>
+					<input id="flength" type="text" /></td>
+			</tr>
+			<tr>
+				<td>
+					Carpet Cost / yd&sup2 $:</td>
+				<td>
+					<input id="fcost" type="text" onkeyup="return keyHandler(event)" size="4"/> <span id="yard">&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2</span></td>
+			</tr>
+			<!-- <tr>
 			<td colspan="2">
-				&nbsp;</td>
+				<strong>Installation Choices</strong><br>
+				<ul>
+					<li>A - Room Is Empty</li>
+					<li>B - Removed Old Carpet But No Furniture</li>
+					<li>C - We Live Here Handle Everything</li>
+					<li>D - No Thanks We Will Install Ourselves</li>
+				</ul>
+			</td>
 		</tr>
 		<tr>
+			<td>Installation</td>
 			<td>
-				Your Estimated Cost:</td>
-			<td>
-				<span id="festimate">0.00</span></td>
-		</tr>
+				<select id="installation">
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+				</select>
+			</td>
+		</tr> -->
+			<tr>
+				<td colspan="2">
+					&nbsp;</td>
+			</tr>
+			<tr>
+				<td>
+					Your Estimated Cost:</td>
+				<td>
+					<span id="festimate">0.00</span></td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;</td>
+				<td style="text-align:center">
+					<input onclick="calc_click()" type="button" value="Calculate" /></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div style="position:relative; float: right;">
+	<table style="width:400px; padding-top:30px; padding-right:50px;">
 		<tr>
 			<td>
-				&nbsp;</td>
-			<td style="text-align:center">
-				<input onclick="calc_click()" type="button" value="Calculate" /></td>
+			<h2>Wide variety of carpet styles and colors. 1st quality Carpets from premium brands such as Beaulieu, DreamWeaver Mohawk, Shaw, Phenix. Our carpets come straight from the mills of Dalton GA.</h2>
+			</td>
 		</tr>
-	</tbody>
-</table>
+	</table>
+	<table style="width: 133px; background-color: white; color: black;" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>
+				<a href="http://www.angieslist.com/companylist/?cid=badge">
+					<img src="http://reviews.angieslist.com/webbadges/sp/wb_small_green_cap.aspx" alt="Read Unbiased Consumer Reviews Online at AngiesList.com" width="133" border="0" />
+				</a>
+			</td>
+		</tr>
+		<tr>
+			<td align="center" style="color: black; font-family: arial, sans-serif; font-size: 12px; border: none; padding: 7px;">
+				Check our <a href="http://www.angieslist.com/flooring-sales-installation-repair/?cid=badge" style="color:blue;">Flooring Reviews</a>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
