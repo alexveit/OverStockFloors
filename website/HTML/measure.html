@@ -5,22 +5,28 @@
 <script>
 
 var needs;
-var needs_inv;
 var standard;
+
+var needs_inv;
 var standard_inv;
+
 var accounted_for;
 var accounted_for_inv;
+
 var mymeasurements;
 var mymeasurements_inv;
+
+var displayed_invs;
 
 //add the measurment to the list for display
 function add_measurement(val)
 {
-	var measure = new Measurement(val,0);
+	var measure = new Measurement(val);
 
 	mymeasurements.push(measure);
-	mymeasurements_inv.push(new Measurement(val,1));
-
+	
+	mymeasurements_inv.push(new Measurement(invert_measurement(val)));
+	
 	var newNode = document.createElement("li");
 	var newContent = document.createTextNode(measure.toString());
 	var my_ul = document.getElementById("mylist");
@@ -34,14 +40,41 @@ function add_measurement(val)
 
 }
 
+function add_measurement_inv()
+{
+	if(!displayed_invs)
+	{
+		var newNode = document.createElement("li");
+		var newContent = document.createTextNode("Iverted Measurments");
+		var my_ul = document.getElementById("mylist");
+
+		newNode.appendChild(newContent);
+
+		document.body.insertBefore(newNode, my_ul);
+		
+		for(var i = 0; i < mymeasurements_inv.length; i++)
+		{
+			newNode = document.createElement("li");
+			newContent = document.createTextNode(mymeasurements_inv[i].toString());
+			my_ul = document.getElementById("mylist");
+
+			newNode.appendChild(newContent);
+
+			document.body.insertBefore(newNode, my_ul);
+		}
+		displayed_invs = true;
+		alert("All Widths and Lengths were swapped for better estimate");
+	}
+}
+
 //add standard and needs table
-function add_table(max,in_needs,in_standard)
+function add_table(max,stan,nee,acc_for)
 {
 	var size = 0;
-	if(in_standard.length > in_needs.length)
-		size = in_standard.length;
+	if(stan.length > nee.length)
+		size = stan.length;
 	else
-		size = in_needs.length;
+		size = nee.length;
 
 	var html = "<table border=\"0\" style=\"width:276px;\"><tbody>";
 
@@ -55,13 +88,13 @@ function add_table(max,in_needs,in_standard)
 	{
 		html = html.concat("<tr>");
 
-		if(i < in_standard.length)
-			html = html.concat(td + in_standard[i].toString() + "</td>");
+		if(i < stan.length)
+			html = html.concat(td + stan[i].toString() + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
-		if(i < in_needs.length)
-			html = html.concat(td + in_needs[i].toString() + "</td>");
+		if(i < nee.length)
+			html = html.concat(td + nee[i].toString() + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
@@ -69,8 +102,10 @@ function add_table(max,in_needs,in_standard)
 	}
 
 	var len = 0.0;
-	for(var i = 0; i < in_standard.length; i++)
-		len += in_standard[i].length;
+	for(var i = 0; i < stan.length; i++)
+	{
+		len += stan[i].length;
+	}
 
 	if(len > 0 || max > 0)
 	{
@@ -96,11 +131,11 @@ function add_table(max,in_needs,in_standard)
 		var stand = 0;
 		var nds = 0
 		
-		for(var i = 0; i < accounted_for.length; i++)
-			nds += accounted_for[i].width * accounted_for[i].length;
+		for(var i = 0; i < acc_for.length; i++)
+			nds += acc_for[i].width * acc_for[i].length;
 		
-		for(var i = 0; i < in_standard.length; i++)
-			stand += in_standard[i].width * in_standard[i].length;
+		for(var i = 0; i < stan.length; i++)
+			stand += stan[i].width * stan[i].length;
 		
 		used_sqr_ft = stand + nds;
 		
@@ -121,15 +156,15 @@ function add_table(max,in_needs,in_standard)
 		
 		sq_yd = (nds/9);
 		
-		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Needs:</strong></td><td style=\"background-color:blue; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + nds + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
+		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Needs:</strong></td><td style=\"background-color:blue; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + nds.toFixed(2) + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		sq_yd = (used_sqr_ft/9);
 		
-		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Actual:</strong></td><td style=\"background-color:green; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + used_sqr_ft + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
+		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Actual:</strong></td><td style=\"background-color:green; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + used_sqr_ft.toFixed(2) + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:yellow;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		sq_yd = (waist/9);
 		
-		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Waist:</strong></td><td style=\"background-color:red; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + waist + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
+		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Waist:</strong></td><td style=\"background-color:red; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + waist.toFixed(2) + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		
 		var coooos = document.forms["myForm"]["cost"].value;
@@ -140,25 +175,33 @@ function add_table(max,in_needs,in_standard)
 		{
 			var val = document.forms["myForm"]["padcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
+			}
 		}
 		
 		if(document.getElementById("install").checked)
 		{
 			var val = document.forms["myForm"]["installcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
+			}
 		}
 		
 		if(document.getElementById("ripout").checked)
 		{
 			var val = document.forms["myForm"]["ripoutcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
+			}
 		}
 		
 		if (!(coooos=null || coooos=="" || isWhitespaceNotEmpty(coooos)))
-			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;
+		{
+			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;			
+		}
 		
 		html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><hr><strong>Estimate</strong></td></tr>");
 
@@ -215,14 +258,18 @@ function calc_steps()
 	while(true)
 	{
 		if(val%2!=0)
+		{
 			val++;
+		}
 		else
+		{
 			break;
+		}
 	}
-
-	standard.push(new Measurement("12x" + val,0));
 	
-	standard_inv.push(new Measurement("12x" + val,0));
+	var measure = new Measurement("12x" + val);
+	standard.push(measure);
+	standard_inv.push(measure);
 }
 
 //calculate every thing
@@ -232,7 +279,7 @@ function calc_totals()
 
 	accounted_for = new Array();
 
-	var grid = new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+	var grid = new Array(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
 	var good = false;
 
@@ -259,7 +306,7 @@ function calc_totals()
 					}
 				}
 			}
-			if(ordered_needs[i].width <= (12-index_from_left))
+			if(ordered_needs[i].width <= (12.0-index_from_left))
 			{
 				var len = 0;
 				var x = index_from_left;
@@ -269,17 +316,19 @@ function calc_totals()
 				{
 					if(k == 0)
 					{
-						grid[j] += parseInt(ordered_needs[i].length);
+						grid[j] += parseFloat(ordered_needs[i].length);
 						len = grid[j];
 					}
 					else
+					{
 						grid[j] = len;
+					}
 				}
 
 				ordered_needs[i].x = x;
 				ordered_needs[i].y = y;
 				
-				accounted_for.push(new Measurement(ordered_needs[i],0));
+				accounted_for.push(new Measurement(ordered_needs[i]));
 				
 				ordered_needs.splice(i, 1);
 				i--;
@@ -298,11 +347,11 @@ function calc_totals()
 //calculate every thing
 function calc_totals_inv()
 {
-	var ordered_needs = get_ordered_needs_inv();
+	var ordered_needs_inv = get_ordered_needs_inv();
 
 	accounted_for_inv = new Array();
 
-	var grid = new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+	var grid = new Array(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
 	var good = false;
 
@@ -310,7 +359,7 @@ function calc_totals_inv()
 
 	while(!good)
 	{	
-		for(var i = 0; i < ordered_needs.length; i++)
+		for(var i = 0; i < ordered_needs_inv.length; i++)
 		{
 			var index_from_left = get_index_from_left(grid,level);
 			if(index_from_left == 0)
@@ -319,7 +368,7 @@ function calc_totals_inv()
 				var max_index = get_max_index(grid);
 				if(max_index != 0)
 				{
-					if(ordered_needs[i].width > max_index)
+					if(ordered_needs_inv[i].width > max_index)
 					{
 						var max = get_max(grid);
 						for(var q = 0; q < max_index; q++)
@@ -329,34 +378,36 @@ function calc_totals_inv()
 					}
 				}
 			}
-			if(ordered_needs[i].width <= (12-index_from_left))
+			if(ordered_needs_inv[i].width <= (12.0-index_from_left))
 			{
 				var len = 0;
 				var x = index_from_left;
 				var y = grid[index_from_left];
 
-				for(var j = index_from_left, k = 0; k < ordered_needs[i].width; j++, k++)
+				for(var j = index_from_left, k = 0; k < ordered_needs_inv[i].width; j++, k++)
 				{
 					if(k == 0)
 					{
-						grid[j] += parseInt(ordered_needs[i].length);
+						grid[j] += parseFloat(ordered_needs_inv[i].length);
 						len = grid[j];
 					}
 					else
+					{
 						grid[j] = len;
+					}
 				}
 
-				ordered_needs[i].x = x;
-				ordered_needs[i].y = y;
+				ordered_needs_inv[i].x = x;
+				ordered_needs_inv[i].y = y;
 				
-				accounted_for.push(new Measurement(ordered_needs[i],0));
+				accounted_for_inv.push(new Measurement(ordered_needs_inv[i]));
 				
-				ordered_needs.splice(i, 1);
+				ordered_needs_inv.splice(i, 1);
 				i--;
 			}	
 		}
 
-		if(ordered_needs.length == 0)
+		if(ordered_needs_inv.length == 0)
 			good = true;
 
 		level++;
@@ -365,10 +416,9 @@ function calc_totals_inv()
 	return get_max(grid);
 }
 
-
 //function called by user to initial calculations
 function calculate()
-{	
+{
 	standard = new Array();
 	needs = new Array();
 	
@@ -385,9 +435,23 @@ function calculate()
 	
 	var max_inv = calc_totals_inv();
 	
-	add_table(max,needs,standard);
+	if(max == 0 || max_inv == 0)
+		return;
 	
-	draw_needs(max);
+	if(max < max_inv)
+	{
+		add_table(max, standard, needs, accounted_for);
+		draw_needs(max, accounted_for);	
+	}
+	else
+	{
+		add_table(max_inv, standard_inv, needs_inv, accounted_for_inv);
+		draw_needs(max_inv, accounted_for_inv);
+		add_measurement_inv();
+	}
+	
+	document.getElementById('measurement').disabled = true;
+	document.getElementById('aaaddd').disabled = true;
 }
 
 //handle key events
@@ -437,12 +501,12 @@ function consolidate_standards()
 		if(round && needs[i].width >= round_val && needs[i].width < 12.0)
 		{
 			needs[i].width = 12;
-			standard.push(new Measurement(needs[i],0));
+			standard.push(new Measurement(needs[i]));
 			needs.splice(i, 1);
 		}
 		else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
 		{
-			standard.push(new Measurement(needs[i],0));
+			standard.push(new Measurement(needs[i]));
 			needs.splice(i, 1);
 		}
 		else if(needs[i].width > 12.0)
@@ -453,19 +517,19 @@ function consolidate_standards()
 				if(round && needs[i].width >= round_val && needs[i].width < 12.0)
 				{
 					needs[i].width = 12;
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
 					needs.splice(i, 1);
 					good = true;
 				}
 				else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
 				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
 					needs.splice(i, 1);
 					good = true;
 				}
 				else if(needs[i].width > 12.0)
 				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
 					needs[i].width -= 12;
 				}
 				else
@@ -476,18 +540,19 @@ function consolidate_standards()
 		}
 	}
 	
+	
 	//inv
 	for (var i = 0; i < needs_inv.length; i++)
 	{
 		if(round && needs_inv[i].width >= round_val && needs_inv[i].width < 12.0)
 		{
 			needs_inv[i].width = 12;
-			standard_inv.push(new Measurement(needs_inv[i],0));
+			standard_inv.push(new Measurement(needs_inv[i]));
 			needs_inv.splice(i, 1);
 		}
 		else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
 		{
-			standard_inv.push(new Measurement(needs_inv[i],0));
+			standard_inv.push(new Measurement(needs_inv[i]));
 			needs_inv.splice(i, 1);
 		}
 		else if(needs_inv[i].width > 12.0)
@@ -498,19 +563,19 @@ function consolidate_standards()
 				if(round && needs_inv[i].width >= round_val && needs_inv[i].width < 12.0)
 				{
 					needs_inv[i].width = 12;
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
 					needs_inv.splice(i, 1);
 					good = true;
 				}
 				else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
 				{
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
 					needs_inv.splice(i, 1);
 					good = true;
 				}
 				else if(needs_inv[i].width > 12.0)
 				{
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
 					needs_inv[i].width -= 12;
 				}
 				else
@@ -523,9 +588,9 @@ function consolidate_standards()
 }
 
 //draw the carpet needs diagram
-function draw_needs(canv_h)
+function draw_needs(canv_h, acc_for)
 {
-	if(accounted_for.length > 0)
+	if(acc_for.length > 0)
 	{
 		var ctx_multiplier = 23;
 	
@@ -558,18 +623,18 @@ function draw_needs(canv_h)
 		
 		var buf = 1;
 		
-		for(var i = 0; i < accounted_for.length; i++)
+		for(var i = 0; i < acc_for.length; i++)
 		{
-			x = accounted_for[i].x*ctx_multiplier;
-			y = accounted_for[i].y*ctx_multiplier;
-			w = accounted_for[i].width*ctx_multiplier;
-			h = accounted_for[i].length*ctx_multiplier;
+			x = acc_for[i].x*ctx_multiplier;
+			y = acc_for[i].y*ctx_multiplier;
+			w = acc_for[i].width*ctx_multiplier;
+			h = acc_for[i].length*ctx_multiplier;
 			ctx.fillStyle="#000000";
 			ctx.fillRect(x,y,w,h);
 			ctx.fillStyle="#0000FF";
 			ctx.fillRect(x+buf,y+buf,w-buf,h-buf);
 			ctx.fillStyle="#FFFFFF";
-			ctx.fillText(accounted_for[i].toString(),x+3,y+17);
+			ctx.fillText(acc_for[i].toString(),x+3,y+17);
 		}
 		
 		document.getElementById("diagram_text").innerHTML = "<strong>Needs Diagram</strong><br />";
@@ -674,7 +739,7 @@ function get_ordered_needs()
 
 	for(var i = 0; i < needs.length; i++)
 	{
-		ordered_needs.push(new Measurement(needs[i],0));
+		ordered_needs.push(new Measurement(needs[i]));
 	}
 
 	ordered_needs.sort(function(a,b) { return b.length - a.length; } );
@@ -682,19 +747,19 @@ function get_ordered_needs()
 	return ordered_needs;
 }
 
-//return a new array of sorted needs
+//return a new array of sorted needs_inv
 function get_ordered_needs_inv()
 {
-	var ordered_needs = new Array();
+	var ordered_needs_inv = new Array();
 
-	for(var i = 0; i < needs.length; i++)
+	for(var i = 0; i < needs_inv.length; i++)
 	{
-		ordered_needs.push(new Measurement(needs_inv[i],0));
+		ordered_needs_inv.push(new Measurement(needs_inv[i]));
 	}
 
-	ordered_needs.sort(function(a,b) { return b.length - a.length; } );
+	ordered_needs_inv.sort(function(a,b) { return b.length - a.length; } );
 
-	return ordered_needs;
+	return ordered_needs_inv;
 }
 
 //a class to represent a index type
@@ -702,6 +767,26 @@ function index_class(val, index)
 {
 	this.val = val;
 	this.index = index;
+}
+
+//invert measurement
+function invert_measurement(input)
+{
+	var n;
+	if(input.indexOf("x") !== -1)
+		n = input.split("x");
+	else if(input.indexOf("*") !== -1)
+		n = input.split("*");
+	else if(input.indexOf("+") !== -1)
+		n = input.split("+");
+	else if(input.indexOf(":") !== -1)
+		n = input.split(":");
+
+	this.width = parseFloat(n[0], 10);
+	this.length = parseFloat(n[1], 10);
+	
+	var ret = n[1] + "x" + n[0];
+	return ret;
 }
 
 //check to see if a string is only white spaces
@@ -712,16 +797,19 @@ function load()
 {
 	mymeasurements = new Array();
 	mymeasurements_inv = new Array();
+	displayed_invs = false;
 	check_device();
-	load_debub_input();
+	//load_debub_input();
 	document.getElementById("measurement").focus();	
 }
 
 //debut testing purposes
 function load_debub_input()
 {
-	var data = "15x18+8x9+7x3+4x4";
-
+	//var data = "15.25x17.5+4x13.5+3x6+3.25x6.75";
+	
+	var data = "17.5x15.25+13.5x4+6x3+6.75x3.25";
+	
 	var n = data.split("+");
 
 	for(var i = 0; i < n.length; i++)
@@ -729,11 +817,11 @@ function load_debub_input()
 		add_measurement(n[i]);
 	}
 
-	document.getElementById("round").checked = true;
+	//document.getElementById("round").checked = true;
 }
 
 //measurement class
-function Measurement(input, type)
+function Measurement(input)
 {
 	if (typeof(input)==='string')
 	{
@@ -746,17 +834,9 @@ function Measurement(input, type)
 			n = input.split("+");
 		else if(input.indexOf(":") !== -1)
 			n = input.split(":");
-		
-		if(type == 0)
-		{
-			this.width = parseFloat(n[0], 10);
-			this.length = parseFloat(n[1], 10);
-		}
-		else
-		{
-			this.width = parseFloat(n[1], 10);
-			this.length = parseFloat(n[0], 10);
-		}
+
+		this.width = parseFloat(n[0], 10);
+		this.length = parseFloat(n[1], 10);
 		this.x = 0.0;
 		this.y = 0.0;
 	}
@@ -806,11 +886,11 @@ function split_standard_from_needs()
 
 		if(temp_w < 12.0)
 		{
-			needs.push(new Measurement(mymeasurements[i],0));
+			needs.push(new Measurement(mymeasurements[i]));
 		}
 		else if(temp_w >= 12.0 && temp_w < 13.0)
 		{
-			standard.push(new Measurement(mymeasurements[i],0));
+			standard.push(new Measurement(mymeasurements[i]));
 		}
 		else
 		{
@@ -820,35 +900,35 @@ function split_standard_from_needs()
 
 				if(temp_w >= 12.0 && temp_w < 13.0)
 				{
-					standard.push(new Measurement("12x" + mymeasurements[i].length.toString(),0));
+					standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
 					good = true;
 				}
 				else if(temp_w > 12.0)
 				{
-					standard.push(new Measurement("12x" + mymeasurements[i].length.toString(),0));
+					standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
 					temp_w -= 12;
 				}
 				else
 				{
-					needs.push(new Measurement(temp_w.toString() + "x" + mymeasurements[i].length.toString(),0));
+					needs.push(new Measurement(temp_w.toString() + "x" + mymeasurements[i].length.toString()));
 					good = true;
 				}
 			}
 		}
 	}
 	
-	//invert 
+	//inv
 	for (var i = 0; i < mymeasurements_inv.length; i++)
 	{
 		var temp_w = mymeasurements_inv[i].width;
 
 		if(temp_w < 12.0)
 		{
-			needs_inv.push(new Measurement(mymeasurements_inv[i],0));
+			needs_inv.push(new Measurement(mymeasurements_inv[i]));
 		}
 		else if(temp_w >= 12.0 && temp_w < 13.0)
 		{
-			standard_inv.push(new Measurement(mymeasurements_inv[i],0));
+			standard_inv.push(new Measurement(mymeasurements_inv[i]));
 		}
 		else
 		{
@@ -858,17 +938,17 @@ function split_standard_from_needs()
 
 				if(temp_w >= 12.0 && temp_w < 13.0)
 				{
-					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString(),0));
+					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString()));
 					good = true;
 				}
 				else if(temp_w > 12.0)
 				{
-					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString(),0));
+					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString()));
 					temp_w -= 12;
 				}
 				else
 				{
-					needs_inv.push(new Measurement(temp_w.toString() + "x" + mymeasurements_inv[i].length.toString(),0));
+					needs_inv.push(new Measurement(temp_w.toString() + "x" + mymeasurements_inv[i].length.toString()));
 					good = true;
 				}
 			}
@@ -884,7 +964,7 @@ function split_standard_from_needs()
 <table border="0" style="width:276px;">
 	<tr>
 		<td style="text-align:center;">
-			<p>Version 1.5</p>
+			<p>Version 1.8</p>
 			<strong>Maximum precision x/4</strong><br />
 			<table style="width:100%;" border="0">
 				<tr>
@@ -947,7 +1027,7 @@ function split_standard_from_needs()
 	</tr>
 	<tr>
 		<td style="text-align:right;  padding-right:4px; width:60%;">W<>L:<input id="measurement" type="text" size="10" onkeypress="return checkEnter(event)" /></td>
-		<td style="text-align:center; width:40%;"><input type="button" onclick="retrieve_measurement()" value="    Add    "></td>
+		<td style="text-align:center; width:40%;"><input id="aaaddd" type="button" onclick="retrieve_measurement()" value="    Add    "></td>
 	</tr>
 	<tr>
 		<td style="text-align:right; padding-right:4px;">Step count: <input id="steps" type="text" size="5" onkeypress="return checkEnter(event)"/></td>

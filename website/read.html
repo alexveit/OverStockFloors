@@ -35,7 +35,13 @@ function MyDistances(dest, mi)
 {
 	this.dest = dest;
 	this.mi = mi;
+	this.loc = "";
 }
+
+MyDistances.prototype.add_loc = function(loc) { this.loc = loc; }
+
+var dists;
+var jjj = 0;
 
 function callback(response, status)
 {
@@ -48,8 +54,9 @@ function callback(response, status)
 	var origins = response.originAddresses;
 	var destinations = response.destinationAddresses;
 	
-	var dists = new Array();
+	dists = new Array();
 	
+
 	for (var i = 0; i < origins.length; i++)
 	{
 		var results = response.rows[i].elements;
@@ -60,16 +67,43 @@ function callback(response, status)
 		}
 	}
 	
-	dists.sort(function(a,b) { return a.mi - b.mi; } );
+	var home_lat =  34.18716089999999;
+	var home_lon = -84.14657090000003;
+	
+	var geocoder = new google.maps.Geocoder();
 	
 	for (var i = 0; i < dists.length; i++)
 	{
-		var newNode = document.createElement("li");
-		var newContent = document.createTextNode(i.toString() + " " + dists[i].dest + ' ---- ' + dists[i].mi.toFixed(1) + " mi");
-		var my_ul = document.getElementById("here");
-		newNode.appendChild(newContent);
-		document.body.insertBefore(newNode, my_ul);
+		geocoder.geocode( { 'address': dists[i].dest }, function(res, stat)
+		{
+			if (stat == google.maps.GeocoderStatus.OK)
+			{
+				var latitude = res[0].geometry.location.lat();
+				var longitude = res[0].geometry.location.lng();
+				
+				var loc = "";
+				if(latitude < home_lat)
+					loc += "S";
+				else
+					loc += "N";
+				
+				if(longitude < home_lon)
+					loc += "E";
+				else
+					loc += "W";
+					
+				dists[jjj].loc = loc;
+				jjj++;
+				
+			}
+			else
+				alert("fuck");
+		});
 	}
+	
+	//dists.sort(function(a,b) { return a.mi - b.mi; } );
+	
+	
 }
 
 function FileReaderOnLoad(e)
@@ -84,14 +118,9 @@ function FileReaderOnLoad(e)
 		calculateDistances(buff);
 		arr.splice(0,25);
 		
-		/*iter++;
+		iter++;
 		
-		if(iter == 5)
-			break;*/
-		
-
-		
-		if(arr.length < 1)
+		if(iter == 4 || arr.length < 1)
 			break;
 	}
 }
@@ -111,8 +140,21 @@ function readSingleFile(evt)
 	reader.readAsText(file);
 }
 
+function do_my_shit()
+{
+	for (var i = 0; i < dists.length; i++)
+	{
+		var newNode = document.createElement("li");
+		var newContent = document.createTextNode(dists[i].dest + ' ---- ' + dists[i].mi.toFixed(1) + " mi " + dists[i].loc);
+		var my_ul = document.getElementById("here");
+		newNode.appendChild(newContent);
+		document.body.insertBefore(newNode, my_ul);
+	}
+}
+
 function dothing()
 {
+	//thingy();
 	document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
 }
 
@@ -121,6 +163,7 @@ function dothing()
 <body onload="dothing()">
 
 <input type="file" id="fileinput" />
+<input type="button" onclick="do_my_shit()" value="cooool"/>
 
 <div id="here">
 </div>
