@@ -1,0 +1,104 @@
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script type="text/javascript">
+
+var arr;
+
+function get_string_array(result)
+{
+	var init = 0;
+	var arr = new Array();
+	for(var i = 0; i < result.length; i++)
+	{
+		if(result[i] == '\n')
+		{
+			arr.push(result.substring(init,i))
+			i++;
+			init = i;
+		}
+	}
+	return arr;
+}
+
+function calculateDistances(dest)
+{
+	var service = new google.maps.DistanceMatrixService();
+	service.getDistanceMatrix(
+	{
+		origins: ['131 merchant square 30040'],
+		destinations: [dest],
+		travelMode: google.maps.TravelMode.DRIVING,
+		unitSystem: google.maps.UnitSystem.METRIC,
+		avoidHighways: false,
+		avoidTolls: false
+	}, callback);
+}
+
+function callback(response, status)
+{
+	if (status != google.maps.DistanceMatrixStatus.OK)
+	{
+		alert('Error was: ' + status);
+	}
+	else
+	{
+		var origins = response.originAddresses;
+		var destinations = response.destinationAddresses;
+		
+		for (var i = 0; i < origins.length; i++)
+		{
+			var results = response.rows[i].elements;
+			for (var j = 0; j < results.length; j++)
+			{
+				var newNode = document.createElement("li");
+				var dist = parseFloat(results[j].distance.text)/1.60934;
+				var newContent = document.createTextNode(j.toString() + " " + destinations[j] + ' ---- ' + dist.toFixed(1) + " mi");
+				var my_ul = document.getElementById("here");
+
+				newNode.appendChild(newContent);
+
+				document.body.insertBefore(newNode, my_ul);
+			}
+		}
+	}
+}
+
+function readSingleFile(evt)
+{
+	//Retrieve the first (and only!) File from the FileList object
+	var file = evt.target.files[0]; 
+
+	if (file)
+	{
+		var reader = new FileReader();
+		reader.onload = function(e)
+		{
+			var contents = e.target.result;
+			arr = get_string_array(e.target.result);
+			for(var i = 0; i < 100; i++)
+				calculateDistances(arr[i]);
+		}
+		
+		reader.readAsText(file);
+	}
+	else
+	{ 
+		alert("Failed to load file");
+	}
+}
+
+function dothing()
+{
+	//calculateDistances();
+	document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+}
+
+</script>
+
+<body onload="dothing()">
+
+<input type="file" id="fileinput" />
+
+<div id="here">
+</div>
+
+</body>

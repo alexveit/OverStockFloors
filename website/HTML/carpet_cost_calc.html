@@ -17,7 +17,7 @@ function calc_click()
 	var cost = document.getElementById("fcost").value;
 	if (cost==null || cost=="" || isWhitespaceNotEmpty(cost))
 	{
-		return false;
+		cost = "0.0";
 	}
 
 	calculate(parseFloat(width),parseFloat(length),parseFloat(cost));
@@ -31,14 +31,37 @@ function calculate(width,length,cost)
 
 	if(document.getElementById("typel").selectedIndex == 1)
 		length /= 12.0;
+	
+	
 
+	var totalSQFT = (width * length);
+	
+	var estimate = 0.0;
+	
+	if(document.getElementById("pad").checked)
+	{
+		estimate += (totalSQFT * 2.75)/9.0;
+	}
+	
+	if(document.getElementById("install").checked)
+	{
+		estimate += (totalSQFT * 3.50)/9.0;
+	}
+	
+	if(document.getElementById("rip").checked)
+	{
+		estimate += (totalSQFT * 1.0)/9.0;
+	}
+	
+	estimate += (totalSQFT * cost)/9.0;
 
-	var total = (width * length);
-	var estimate = (total * cost)/9.0;
-
-	document.getElementById("festimate").innerHTML = estimate.toFixed(2);
+	document.getElementById("festimate").innerHTML = "$" + estimate.toFixed(2);
 }
-
+//handle checkbox click
+function cb_click(cb)
+{
+	calc_click();
+}
 function isWhitespaceNotEmpty(text) { return text.length > 0 && !/[^\s]/.test(text); }
 
 function keyHandler(e)
@@ -47,22 +70,25 @@ function keyHandler(e)
 	var txtArea = /textarea/i.test((e.target || e.srcElement).tagName);
 	var is_enter = (e.keyCode || e.which || e.charCode || 0) !== 13;
 	
-	var value = document.getElementById("fcost").value;
-	
-	value.concat(String.fromCharCode(e.keyCode));
-	
-	var yard = parseFloat(value)/9.0;
-	
-	if(!isNaN(yard))
+	if(e.srcElement.id == "fcost")
 	{
-		document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ " + yard.toFixed(2) + " / ft&sup2";
-	}
-	else
-	{
-		document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2";
+		var value = document.getElementById("fcost").value;
+		
+		value.concat(String.fromCharCode(e.keyCode));
+		
+		var yard = parseFloat(value)/9.0;
+		
+		if(!isNaN(yard))
+		{
+			document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ " + yard.toFixed(2) + " / ft&sup2";	
+		}
+		else
+		{
+			document.getElementById("yard").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2";
+		}
 	}
 	
-	
+	calc_click();
 	
 	return txtArea || is_enter;
 }
@@ -77,59 +103,37 @@ function keyHandler(e)
 		<tbody>
 			<tr>
 				<td>
-					Width of Room in <select id="typew" tabindex="-1"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+					Width of Room in <select id="typew" tabindex="-1" onchange="calc_click();"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
 				<td>
-					<input id="fwidth" type="text" /></td>
+					<input id="fwidth" type="text" onkeyup="return keyHandler(event);"/></td>
 			</tr>
 			<tr>
 				<td>
-					Length of Room in <select id="typel" tabindex="-1"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
+					Length of Room in <select id="typel" tabindex="-1" onchange="calc_click();"><option value="feet">feet</option><option value="inch">inch</option></select>:</td>
 				<td>
-					<input id="flength" type="text" /></td>
+					<input id="flength" type="text" onkeyup="return keyHandler(event);"/></td>
 			</tr>
 			<tr>
 				<td>
 					Carpet Cost / yd&sup2 $:</td>
 				<td>
-					<input id="fcost" type="text" onkeyup="return keyHandler(event)" size="4"/> <span id="yard">&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2</span></td>
+					<input id="fcost" type="text" onkeyup="return keyHandler(event);" size="4"/> <span id="yard">&nbsp;&nbsp;&nbsp;&nbsp;$ 0.00 / ft&sup2</span></td>
 			</tr>
-			<!-- <tr>
-			<td colspan="2">
-				<strong>Installation Choices</strong><br>
-				<ul>
-					<li>A - Room Is Empty</li>
-					<li>B - Removed Old Carpet But No Furniture</li>
-					<li>C - We Live Here Handle Everything</li>
-					<li>D - No Thanks We Will Install Ourselves</li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td>Installation</td>
-			<td>
-				<select id="installation">
-					<option value="A">A</option>
-					<option value="B">B</option>
-					<option value="C">C</option>
-					<option value="D">D</option>
-				</select>
-			</td>
-		</tr> -->
 			<tr>
 				<td colspan="2">
-					&nbsp;</td>
+					<ul>
+						<li><input type="checkbox" id="pad" onclick="cb_click(this);">Padding</li>
+						<li><input type="checkbox" id="install" onclick="cb_click(this);">installation</li>
+						<li><input type="checkbox" id="rip" onclick="cb_click(this);">Ripout</li>
+					</ul>
+				</td>
 			</tr>
+
 			<tr>
 				<td>
 					Your Estimated Cost:</td>
 				<td>
-					<span id="festimate">0.00</span></td>
-			</tr>
-			<tr>
-				<td>
-					&nbsp;</td>
-				<td style="text-align:center">
-					<input onclick="calc_click()" type="button" value="Calculate" /></td>
+					<span id="festimate">$0.00</span></td>
 			</tr>
 		</tbody>
 	</table>
@@ -140,20 +144,6 @@ function keyHandler(e)
 		<tr>
 			<td>
 			<h2>Wide variety of carpet styles and colors. 1st quality Carpets from premium brands such as Beaulieu, DreamWeaver Mohawk, Shaw, Phenix. Our carpets come straight from the mills of Dalton GA.</h2>
-			</td>
-		</tr>
-	</table>
-	<table style="width: 133px; background-color: white; color: black;" cellpadding="0" cellspacing="0">
-		<tr>
-			<td>
-				<a href="http://www.angieslist.com/companylist/?cid=badge">
-					<img src="http://reviews.angieslist.com/webbadges/sp/wb_small_green_cap.aspx" alt="Read Unbiased Consumer Reviews Online at AngiesList.com" width="133" border="0" />
-				</a>
-			</td>
-		</tr>
-		<tr>
-			<td align="center" style="color: black; font-family: arial, sans-serif; font-size: 12px; border: none; padding: 7px;">
-				Check our <a href="http://www.angieslist.com/flooring-sales-installation-repair/?cid=badge" style="color:blue;">Flooring Reviews</a>
 			</td>
 		</tr>
 	</table>

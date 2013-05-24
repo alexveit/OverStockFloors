@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 
-//#define GET_ZIPS
+#define GET_ZIPS
 
 #ifdef GET_ZIPS
 
@@ -45,28 +45,28 @@ int main(int, char*[])
 	string line;
 	string zip;
 	ifstream myfile ("asfad.csv");
-	vector<string> zips;
+	vector<string> vec;
 	if (myfile.is_open())
 	{
 		while ( myfile.good() )
 		{
 			getline (myfile,line);
 			zip = get_zip(line);
-			if(zip.size() == 5)
+			if(zip.compare("30041") == 0)
 			{
-				cout << zip << endl;
-				zips.push_back(zip);
+				cout << line << endl;
+				vec.push_back(line);
 			}
 		}
 		myfile.close();
 	}
 	
 	ofstream myfile2;
-	myfile2.open ("zips.txt");
+	myfile2.open ("30041.txt");
 	
-	for(unsigned i = 0; i < zips.size(); i++)
+	for(unsigned i = 0; i < vec.size(); i++)
 	{
-		myfile2 << zips[i] << endl;
+		myfile2 << vec[i] << endl;
 	}
 	
 	myfile2.close();
