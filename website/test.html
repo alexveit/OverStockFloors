@@ -51,8 +51,8 @@ function calculateDistances() {
   var service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix(
     {
-      origins: ['131 merchant square 30040'],
-      destinations: ['1049 Powers Ferry Rd 30067'],
+      origins: ['Greenwich, England'],
+      destinations: [destinationA, destinationB],
       travelMode: google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.METRIC,
       avoidHighways: false,
@@ -72,9 +72,9 @@ function callback(response, status) {
 
     for (var i = 0; i < origins.length; i++) {
       var results = response.rows[i].elements;
-      //addMarker(origins[i], false);
+      addMarker(origins[i], false);
       for (var j = 0; j < results.length; j++) {
-        //addMarker(destinations[j], true);
+        addMarker(destinations[j], true);
         outputDiv.innerHTML += origins[i] + ' to ' + destinations[j]
             + ': ' + results[j].distance.text + ' in '
             + results[j].duration.text + '<br>';

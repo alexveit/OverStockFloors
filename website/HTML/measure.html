@@ -5,16 +5,21 @@
 <script>
 
 var needs;
+var needs_inv;
 var standard;
+var standard_inv;
 var accounted_for;
+var accounted_for_inv;
 var mymeasurements;
+var mymeasurements_inv;
 
 //add the measurment to the list for display
 function add_measurement(val)
 {
-	var measure = new Measurement(val);
+	var measure = new Measurement(val,0);
 
 	mymeasurements.push(measure);
+	mymeasurements_inv.push(new Measurement(val,1));
 
 	var newNode = document.createElement("li");
 	var newContent = document.createTextNode(measure.toString());
@@ -30,13 +35,13 @@ function add_measurement(val)
 }
 
 //add standard and needs table
-function add_table(max)
+function add_table(max,in_needs,in_standard)
 {
 	var size = 0;
-	if(standard.length > needs.length)
-		size = standard.length;
+	if(in_standard.length > in_needs.length)
+		size = in_standard.length;
 	else
-		size = needs.length;
+		size = in_needs.length;
 
 	var html = "<table border=\"0\" style=\"width:276px;\"><tbody>";
 
@@ -50,13 +55,13 @@ function add_table(max)
 	{
 		html = html.concat("<tr>");
 
-		if(i < standard.length)
-			html = html.concat(td + standard[i].toString() + "</td>");
+		if(i < in_standard.length)
+			html = html.concat(td + in_standard[i].toString() + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
-		if(i < needs.length)
-			html = html.concat(td + needs[i].toString() + "</td>");
+		if(i < in_needs.length)
+			html = html.concat(td + in_needs[i].toString() + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
@@ -64,10 +69,8 @@ function add_table(max)
 	}
 
 	var len = 0.0;
-	for(var i = 0; i < standard.length; i++)
-	{
-		len += standard[i].length;
-	}
+	for(var i = 0; i < in_standard.length; i++)
+		len += in_standard[i].length;
 
 	if(len > 0 || max > 0)
 	{
@@ -96,8 +99,8 @@ function add_table(max)
 		for(var i = 0; i < accounted_for.length; i++)
 			nds += accounted_for[i].width * accounted_for[i].length;
 		
-		for(var i = 0; i < standard.length; i++)
-			stand += standard[i].width * standard[i].length;
+		for(var i = 0; i < in_standard.length; i++)
+			stand += in_standard[i].width * in_standard[i].length;
 		
 		used_sqr_ft = stand + nds;
 		
@@ -137,33 +140,25 @@ function add_table(max)
 		{
 			var val = document.forms["myForm"]["padcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
-			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
-			}
 		}
 		
 		if(document.getElementById("install").checked)
 		{
 			var val = document.forms["myForm"]["installcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
-			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
-			}
 		}
 		
 		if(document.getElementById("ripout").checked)
 		{
 			var val = document.forms["myForm"]["ripoutcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
-			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
-			}
 		}
 		
 		if (!(coooos=null || coooos=="" || isWhitespaceNotEmpty(coooos)))
-		{
-			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;			
-		}
+			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;
 		
 		html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><hr><strong>Estimate</strong></td></tr>");
 
@@ -188,6 +183,19 @@ function aggregate_same_lengths()
 			}
 		}
 	}
+	
+	//inv
+	for (var i = 0; i < needs_inv.length; i++)
+	{
+		for (var j = i+1; j < needs_inv.length; j++)
+		{
+			if(needs_inv[j].length == needs_inv[i].length)
+			{
+				needs_inv[i].add_width(needs_inv[j].width);
+				needs_inv.splice(j, 1);
+			}
+		}
+	}
 }
 
 //factor in steps to the standards
@@ -207,16 +215,14 @@ function calc_steps()
 	while(true)
 	{
 		if(val%2!=0)
-		{
 			val++;
-		}
 		else
-		{
 			break;
-		}
 	}
 
-	standard.push(new Measurement("12x" + val));
+	standard.push(new Measurement("12x" + val,0));
+	
+	standard_inv.push(new Measurement("12x" + val,0));
 }
 
 //calculate every thing
@@ -267,15 +273,13 @@ function calc_totals()
 						len = grid[j];
 					}
 					else
-					{
 						grid[j] = len;
-					}
 				}
 
 				ordered_needs[i].x = x;
 				ordered_needs[i].y = y;
 				
-				accounted_for.push(new Measurement(ordered_needs[i]));
+				accounted_for.push(new Measurement(ordered_needs[i],0));
 				
 				ordered_needs.splice(i, 1);
 				i--;
@@ -291,21 +295,85 @@ function calc_totals()
 	return get_max(grid);
 }
 
+//calculate every thing
+function calc_totals_inv()
+{
+	var ordered_needs = get_ordered_needs_inv();
+
+	accounted_for_inv = new Array();
+
+	var grid = new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+
+	var good = false;
+
+	var level = 0;
+
+	while(!good)
+	{	
+		for(var i = 0; i < ordered_needs.length; i++)
+		{
+			var index_from_left = get_index_from_left(grid,level);
+			if(index_from_left == 0)
+			{
+				level = 0;
+				var max_index = get_max_index(grid);
+				if(max_index != 0)
+				{
+					if(ordered_needs[i].width > max_index)
+					{
+						var max = get_max(grid);
+						for(var q = 0; q < max_index; q++)
+						{
+							grid[q] = max;
+						}
+					}
+				}
+			}
+			if(ordered_needs[i].width <= (12-index_from_left))
+			{
+				var len = 0;
+				var x = index_from_left;
+				var y = grid[index_from_left];
+
+				for(var j = index_from_left, k = 0; k < ordered_needs[i].width; j++, k++)
+				{
+					if(k == 0)
+					{
+						grid[j] += parseInt(ordered_needs[i].length);
+						len = grid[j];
+					}
+					else
+						grid[j] = len;
+				}
+
+				ordered_needs[i].x = x;
+				ordered_needs[i].y = y;
+				
+				accounted_for.push(new Measurement(ordered_needs[i],0));
+				
+				ordered_needs.splice(i, 1);
+				i--;
+			}	
+		}
+
+		if(ordered_needs.length == 0)
+			good = true;
+
+		level++;
+	}
+
+	return get_max(grid);
+}
+
+
 //function called by user to initial calculations
 function calculate()
-{
-	/*
-	var val = document.forms["myForm"]["cost"].value;
-
-	if (val==null || val=="" || isWhitespaceNotEmpty(val))
-	{
-		alert("set cost");
-		return false;
-	}
-	*/
-	
+{	
 	standard = new Array();
 	needs = new Array();
+	
+	standard_inv = new Array();
+	needs_inv = new Array();
 
 	split_standard_from_needs();
 	aggregate_same_lengths();
@@ -315,9 +383,11 @@ function calculate()
 
 	var max = calc_totals();
 	
+	var max_inv = calc_totals_inv();
+	
+	add_table(max,needs,standard);
+	
 	draw_needs(max);
-
-	add_table(max);
 }
 
 //handle key events
@@ -361,17 +431,18 @@ function consolidate_standards()
 	var round = document.getElementById("round").checked;
 	var toround = document.getElementById("toround");
 	var round_val = parseFloat(toround[toround.selectedIndex].value);
+	
 	for (var i = 0; i < needs.length; i++)
 	{
 		if(round && needs[i].width >= round_val && needs[i].width < 12.0)
 		{
 			needs[i].width = 12;
-			standard.push(new Measurement(needs[i]));
+			standard.push(new Measurement(needs[i],0));
 			needs.splice(i, 1);
 		}
 		else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
 		{
-			standard.push(new Measurement(needs[i]));
+			standard.push(new Measurement(needs[i],0));
 			needs.splice(i, 1);
 		}
 		else if(needs[i].width > 12.0)
@@ -382,20 +453,65 @@ function consolidate_standards()
 				if(round && needs[i].width >= round_val && needs[i].width < 12.0)
 				{
 					needs[i].width = 12;
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
 					needs.splice(i, 1);
 					good = true;
 				}
 				else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
 				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
 					needs.splice(i, 1);
 					good = true;
 				}
 				else if(needs[i].width > 12.0)
 				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString(),0));
 					needs[i].width -= 12;
+				}
+				else
+				{
+					good = true;
+				}
+			}
+		}
+	}
+	
+	//inv
+	for (var i = 0; i < needs_inv.length; i++)
+	{
+		if(round && needs_inv[i].width >= round_val && needs_inv[i].width < 12.0)
+		{
+			needs_inv[i].width = 12;
+			standard_inv.push(new Measurement(needs_inv[i],0));
+			needs_inv.splice(i, 1);
+		}
+		else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
+		{
+			standard_inv.push(new Measurement(needs_inv[i],0));
+			needs_inv.splice(i, 1);
+		}
+		else if(needs_inv[i].width > 12.0)
+		{
+			var good = false;
+			while(!good)
+			{
+				if(round && needs_inv[i].width >= round_val && needs_inv[i].width < 12.0)
+				{
+					needs_inv[i].width = 12;
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					needs_inv.splice(i, 1);
+					good = true;
+				}
+				else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
+				{
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					needs_inv.splice(i, 1);
+					good = true;
+				}
+				else if(needs_inv[i].width > 12.0)
+				{
+					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString(),0));
+					needs_inv[i].width -= 12;
 				}
 				else
 				{
@@ -558,7 +674,22 @@ function get_ordered_needs()
 
 	for(var i = 0; i < needs.length; i++)
 	{
-		ordered_needs.push(new Measurement(needs[i]));
+		ordered_needs.push(new Measurement(needs[i],0));
+	}
+
+	ordered_needs.sort(function(a,b) { return b.length - a.length; } );
+
+	return ordered_needs;
+}
+
+//return a new array of sorted needs
+function get_ordered_needs_inv()
+{
+	var ordered_needs = new Array();
+
+	for(var i = 0; i < needs.length; i++)
+	{
+		ordered_needs.push(new Measurement(needs_inv[i],0));
 	}
 
 	ordered_needs.sort(function(a,b) { return b.length - a.length; } );
@@ -580,8 +711,9 @@ function isWhitespaceNotEmpty(text) { return text.length > 0 && !/[^\s]/.test(te
 function load()
 {
 	mymeasurements = new Array();
+	mymeasurements_inv = new Array();
 	check_device();
-	//load_debub_input();
+	load_debub_input();
 	document.getElementById("measurement").focus();	
 }
 
@@ -601,7 +733,7 @@ function load_debub_input()
 }
 
 //measurement class
-function Measurement(input)
+function Measurement(input, type)
 {
 	if (typeof(input)==='string')
 	{
@@ -614,9 +746,17 @@ function Measurement(input)
 			n = input.split("+");
 		else if(input.indexOf(":") !== -1)
 			n = input.split(":");
-
-		this.width = parseFloat(n[0], 10);
-		this.length = parseFloat(n[1], 10);
+		
+		if(type == 0)
+		{
+			this.width = parseFloat(n[0], 10);
+			this.length = parseFloat(n[1], 10);
+		}
+		else
+		{
+			this.width = parseFloat(n[1], 10);
+			this.length = parseFloat(n[0], 10);
+		}
 		this.x = 0.0;
 		this.y = 0.0;
 	}
@@ -666,11 +806,11 @@ function split_standard_from_needs()
 
 		if(temp_w < 12.0)
 		{
-			needs.push(new Measurement(mymeasurements[i]));
+			needs.push(new Measurement(mymeasurements[i],0));
 		}
 		else if(temp_w >= 12.0 && temp_w < 13.0)
 		{
-			standard.push(new Measurement(mymeasurements[i]));
+			standard.push(new Measurement(mymeasurements[i],0));
 		}
 		else
 		{
@@ -680,17 +820,55 @@ function split_standard_from_needs()
 
 				if(temp_w >= 12.0 && temp_w < 13.0)
 				{
-					standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
+					standard.push(new Measurement("12x" + mymeasurements[i].length.toString(),0));
 					good = true;
 				}
 				else if(temp_w > 12.0)
 				{
-					standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
+					standard.push(new Measurement("12x" + mymeasurements[i].length.toString(),0));
 					temp_w -= 12;
 				}
 				else
 				{
-					needs.push(new Measurement(temp_w.toString() + "x" + mymeasurements[i].length.toString()));
+					needs.push(new Measurement(temp_w.toString() + "x" + mymeasurements[i].length.toString(),0));
+					good = true;
+				}
+			}
+		}
+	}
+	
+	//invert 
+	for (var i = 0; i < mymeasurements_inv.length; i++)
+	{
+		var temp_w = mymeasurements_inv[i].width;
+
+		if(temp_w < 12.0)
+		{
+			needs_inv.push(new Measurement(mymeasurements_inv[i],0));
+		}
+		else if(temp_w >= 12.0 && temp_w < 13.0)
+		{
+			standard_inv.push(new Measurement(mymeasurements_inv[i],0));
+		}
+		else
+		{
+			var good = false;
+			while(!good)
+			{
+
+				if(temp_w >= 12.0 && temp_w < 13.0)
+				{
+					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString(),0));
+					good = true;
+				}
+				else if(temp_w > 12.0)
+				{
+					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString(),0));
+					temp_w -= 12;
+				}
+				else
+				{
+					needs_inv.push(new Measurement(temp_w.toString() + "x" + mymeasurements_inv[i].length.toString(),0));
 					good = true;
 				}
 			}

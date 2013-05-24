@@ -1,20 +1,18 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script type="text/javascript">
 
-var arr;
-
 function get_string_array(result)
 {
 	var init = 0;
 	var arr = new Array();
 	for(var i = 0; i < result.length; i++)
-	{
+	{		
 		if(result[i] == '\n')
 		{
 			arr.push(result.substring(init,i))
 			i++;
 			init = i;
-		}
+		}	
 	}
 	return arr;
 }
@@ -25,7 +23,7 @@ function calculateDistances(dest)
 	service.getDistanceMatrix(
 	{
 		origins: ['131 merchant square 30040'],
-		destinations: [dest],
+		destinations: dest,
 		travelMode: google.maps.TravelMode.DRIVING,
 		unitSystem: google.maps.UnitSystem.METRIC,
 		avoidHighways: false,
@@ -33,62 +31,88 @@ function calculateDistances(dest)
 	}, callback);
 }
 
+function MyDistances(dest, mi)
+{
+	this.dest = dest;
+	this.mi = mi;
+}
+
 function callback(response, status)
 {
 	if (status != google.maps.DistanceMatrixStatus.OK)
 	{
 		alert('Error was: ' + status);
+		return;
 	}
-	else
+	
+	var origins = response.originAddresses;
+	var destinations = response.destinationAddresses;
+	
+	var dists = new Array();
+	
+	for (var i = 0; i < origins.length; i++)
 	{
-		var origins = response.originAddresses;
-		var destinations = response.destinationAddresses;
-		
-		for (var i = 0; i < origins.length; i++)
+		var results = response.rows[i].elements;
+		for (var j = 0; j < results.length; j++)
 		{
-			var results = response.rows[i].elements;
-			for (var j = 0; j < results.length; j++)
-			{
-				var newNode = document.createElement("li");
-				var dist = parseFloat(results[j].distance.text)/1.60934;
-				var newContent = document.createTextNode(j.toString() + " " + destinations[j] + ' ---- ' + dist.toFixed(1) + " mi");
-				var my_ul = document.getElementById("here");
-
-				newNode.appendChild(newContent);
-
-				document.body.insertBefore(newNode, my_ul);
-			}
+			var dist = parseFloat(results[j].distance.text)/1.60934;
+			dists.push(new MyDistances(destinations[j],dist));	
 		}
+	}
+	
+	dists.sort(function(a,b) { return a.mi - b.mi; } );
+	
+	for (var i = 0; i < dists.length; i++)
+	{
+		var newNode = document.createElement("li");
+		var newContent = document.createTextNode(i.toString() + " " + dists[i].dest + ' ---- ' + dists[i].mi.toFixed(1) + " mi");
+		var my_ul = document.getElementById("here");
+		newNode.appendChild(newContent);
+		document.body.insertBefore(newNode, my_ul);
+	}
+}
+
+function FileReaderOnLoad(e)
+{
+	var arr = get_string_array(e.target.result);
+	
+	var iter = 0;
+	
+	while(true)
+	{
+		var buff = arr.slice(0,25);
+		calculateDistances(buff);
+		arr.splice(0,25);
+		
+		/*iter++;
+		
+		if(iter == 5)
+			break;*/
+		
+
+		
+		if(arr.length < 1)
+			break;
 	}
 }
 
 function readSingleFile(evt)
 {
-	//Retrieve the first (and only!) File from the FileList object
 	var file = evt.target.files[0]; 
 
-	if (file)
+	if(!file)
 	{
-		var reader = new FileReader();
-		reader.onload = function(e)
-		{
-			var contents = e.target.result;
-			arr = get_string_array(e.target.result);
-			for(var i = 0; i < 100; i++)
-				calculateDistances(arr[i]);
-		}
-		
-		reader.readAsText(file);
-	}
-	else
-	{ 
 		alert("Failed to load file");
+		return;
 	}
+	
+	var reader = new FileReader();
+	reader.onload = FileReaderOnLoad;
+	reader.readAsText(file);
 }
 
 function dothing()
 {
-	//calculateDistances();
 	document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
 }
 
