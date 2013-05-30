@@ -40,7 +40,7 @@ function add_measurement(val)
 
 }
 
-function add_measurement_inv()
+function add_measurements_inv()
 {
 	if(!displayed_invs)
 	{
@@ -75,6 +75,10 @@ function add_table(max,stan,nee,acc_for)
 		size = stan.length;
 	else
 		size = nee.length;
+		
+	var pad = document.getElementById("pad").checked;
+	var install = document.getElementById("install").checked;
+	var ripout = document.getElementById("ripout").checked;
 
 	var html = "<table border=\"0\" style=\"width:276px;\"><tbody>";
 
@@ -89,12 +93,12 @@ function add_table(max,stan,nee,acc_for)
 		html = html.concat("<tr>");
 
 		if(i < stan.length)
-			html = html.concat(td + stan[i].toString() + "</td>");
+			html = html.concat(td + stan[i].toString(true) + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
 		if(i < nee.length)
-			html = html.concat(td + nee[i].toString() + "</td>");
+			html = html.concat(td + nee[i].toString(true) + "</td>");
 		else
 			html = html.concat("<td>&nbsp;</td>");
 
@@ -115,12 +119,12 @@ function add_table(max,stan,nee,acc_for)
 		html = html.concat("<td style=\"width:50%; text-align:center;\">Needs</td></tr>");
 
 		if(len > 0)
-			html = html.concat("<tr><td style=\"text-align:center; background-color:yellow;\"><span style=\"color:blue;\"><strong>12x" + len + "</strong></span></td>");
+			html = html.concat("<tr><td style=\"text-align:center; background-color:yellow;\"><span style=\"color:blue;\"><strong>12x" + len.toFixed(2) + "</strong></span></td>");
 		else
 			html = html.concat("<td></td>");
 
 		if(max > 0)
-			html = html.concat("<td style=\"text-align:center; background-color:blue;\"><span style=\"color:yellow;\"><strong>12x" + max + "</strong></span></td></tr>");
+			html = html.concat("<td style=\"text-align:center; background-color:blue;\"><span style=\"color:yellow;\"><strong>12x" + max.toFixed(2) + "</strong></span></td></tr>");
 		else
 			html = html.concat("<td></td></tr>");
 
@@ -145,14 +149,26 @@ function add_table(max,stan,nee,acc_for)
 		
 		html = html.concat("<tr style=\"background-color:brown;\">");
 		
-		html = html.concat("<td colspan=\"2\" style=\"text-align:center;\"><span style=\"color:yellow;\"><strong> 12x" + total);
-		html = html.concat("<br />" + t_sqr_ft + " ft&sup2 / " + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr>");
+		html = html.concat("<td colspan=\"2\" style=\"text-align:center;\"><span style=\"color:yellow;\"><strong><span style=\"font-size:130%;\"> 12x" + total.toFixed(2));
+		html = html.concat("<br />" + t_sqr_ft.toFixed(2) + " ft&sup2 / " + sq_yd.toFixed(2) + " yd&sup2</span></strong></span></td></tr>");
+		
+		if(pad)
+		{
+			html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><strong>Pad</strong></td></tr>");
+			html = html.concat("<tr style=\"background-color:brown;\">");
+			
+			var actual_pad_ft = (t_sqr_ft*90.0)/100.0;
+			var actual_pad_yd = actual_pad_ft/9.0;
+			
+			html = html.concat("<td colspan=\"2\" style=\"text-align:center;\"><span style=\"color:yellow;\"><strong>");
+			html = html.concat(actual_pad_ft.toFixed(2) + " ft&sup2 / " + actual_pad_yd.toFixed(2) + " yd&sup2</strong></span></td></tr>");
+		}
 		
 		html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><table border=\"0\" style=\"width:100%;><tr><td colspan=\"2\" style=\"text-align:center;\"><hr><strong>Usage</strong></td></tr>");
 		
 		sq_yd = (stand/9);
 		
-		html = html.concat("<tr><td style=\"text-align:right; width:30%;\"><strong>Standard:</strong></td><td style=\"background-color:yellow; width:70%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:blue;\"><strong>" + stand + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:blue;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
+		html = html.concat("<tr><td style=\"text-align:right; width:30%;\"><strong>Standard:</strong></td><td style=\"background-color:yellow; width:70%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:blue;\"><strong>" + stand.toFixed(2) + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:blue;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		sq_yd = (nds/9);
 		
@@ -170,9 +186,14 @@ function add_table(max,stan,nee,acc_for)
 		var coooos = document.forms["myForm"]["cost"].value;
 		
 		var cost = 0.0;
-
-		if(document.getElementById("pad").checked)
+		
+		var str = "<br />with: ";
+		var extras = false;
+		
+		if(pad)
 		{
+			extras = true;
+			str += "<i>pad</i>";
 			var val = document.forms["myForm"]["padcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
 			{
@@ -180,8 +201,15 @@ function add_table(max,stan,nee,acc_for)
 			}
 		}
 		
-		if(document.getElementById("install").checked)
+		if(install)
 		{
+			if(extras)
+				str += "<i>, install</i>";
+			else
+			{
+				extras = true;
+				str += "<i>install</i>";
+			}
 			var val = document.forms["myForm"]["installcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
 			{
@@ -189,8 +217,15 @@ function add_table(max,stan,nee,acc_for)
 			}
 		}
 		
-		if(document.getElementById("ripout").checked)
+		if(ripout)
 		{
+			if(extras)
+				str += "<i>, ripout</i>";
+			else
+			{
+				extras = true;
+				str += "<i>ripout</i>";
+			}
 			var val = document.forms["myForm"]["ripoutcost"].value;
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
 			{
@@ -203,9 +238,12 @@ function add_table(max,stan,nee,acc_for)
 			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;			
 		}
 		
-		html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><hr><strong>Estimate</strong></td></tr>");
-
-		html = html.concat("<tr><td style=\"text-align:right;\"><strong>Cost:</strong></td><td style=\"text-align:center; background-color:green;\"><span style=\"color:yellow;\"><strong>$" + cost.toFixed(2) + "</strong></span></td></tr></table></td></tr>");
+		if(!extras)
+			str ="";
+		
+		html = html.concat("<tr><td colspan=\"2\" style=\"text-align:center;\"><hr><strong>Estimate"+str+"</strong></td></tr>");
+		
+		html = html.concat("<tr><td style=\"text-align:right;\"><strong>Cost:</strong></td><td style=\"text-align:center; background-color:green;\"><span style=\"color:yellow;\"><strong><span style=\"font-size:130%;\">$" + cost.toFixed(2) + "</span></strong></span></td></tr></table></td></tr>");
 		
 		html = html.concat("</tbody></table>");
 		document.getElementById("addtable").innerHTML = html;
@@ -447,7 +485,7 @@ function calculate()
 	{
 		add_table(max_inv, standard_inv, needs_inv, accounted_for_inv);
 		draw_needs(max_inv, accounted_for_inv);
-		add_measurement_inv();
+		add_measurements_inv();
 	}
 	
 	document.getElementById('measurement').disabled = true;
@@ -634,7 +672,7 @@ function draw_needs(canv_h, acc_for)
 			ctx.fillStyle="#0000FF";
 			ctx.fillRect(x+buf,y+buf,w-buf,h-buf);
 			ctx.fillStyle="#FFFFFF";
-			ctx.fillText(acc_for[i].toString(),x+3,y+17);
+			ctx.fillText(acc_for[i].toString(true),x+3,y+17);
 		}
 		
 		document.getElementById("diagram_text").innerHTML = "<strong>Needs Diagram</strong><br />";
@@ -781,9 +819,6 @@ function invert_measurement(input)
 		n = input.split("+");
 	else if(input.indexOf(":") !== -1)
 		n = input.split(":");
-
-	this.width = parseFloat(n[0], 10);
-	this.length = parseFloat(n[1], 10);
 	
 	var ret = n[1] + "x" + n[0];
 	return ret;
@@ -799,7 +834,7 @@ function load()
 	mymeasurements_inv = new Array();
 	displayed_invs = false;
 	check_device();
-	//load_debub_input();
+	load_debub_input();
 	document.getElementById("measurement").focus();	
 }
 
@@ -808,7 +843,7 @@ function load_debub_input()
 {
 	//var data = "15.25x17.5+4x13.5+3x6+3.25x6.75";
 	
-	var data = "17.5x15.25+13.5x4+6x3+6.75x3.25";
+	var data = "15.6x14+3x4+3x2+18x15.6+12x13.3+2x13+4.6x4+11x13.6+11x12+7x2+7.3x6.6";
 	
 	var n = data.split("+");
 
@@ -818,6 +853,25 @@ function load_debub_input()
 	}
 
 	//document.getElementById("round").checked = true;
+}
+
+function get_real_fraction(val)
+{
+	var ret = "07";
+	switch(val)
+	{
+	case "2": ret = "17"; break;
+	case "3": ret = "25"; break;
+	case "4": ret = "33"; break;
+	case "5": ret = "42"; break;
+	case "6": ret = "50"; break;
+	case "7": ret = "58"; break;
+	case "8": ret = "67"; break;
+	case "9": ret = "75"; break;
+	case "10": ret = "83"; break;
+	case "11": ret = "92"; break;
+	}
+	return ret;
 }
 
 //measurement class
@@ -834,9 +888,32 @@ function Measurement(input)
 			n = input.split("+");
 		else if(input.indexOf(":") !== -1)
 			n = input.split(":");
-
-		this.width = parseFloat(n[0], 10);
-		this.length = parseFloat(n[1], 10);
+		
+		var w;
+		var l;
+		
+		if(n[0].indexOf(".") !== -1)
+		{
+			w = n[0].split(".");
+			w[1] = get_real_fraction(w[1]);
+			this.width = parseFloat(w[0] + "." + w[1]);
+		}
+		else
+		{
+			this.width = parseFloat(n[0]);
+		}
+		
+		if(n[1].indexOf(".") !== -1)
+		{
+			l = n[1].split(".");
+			l[1] = get_real_fraction(l[1]);
+			this.length = parseFloat(l[0] + "." + l[1]);
+		}
+		else
+		{
+			this.length = parseFloat(n[1]);
+		}
+			
 		this.x = 0.0;
 		this.y = 0.0;
 	}
@@ -853,7 +930,13 @@ function Measurement(input)
 Measurement.prototype.add_width = function(width) { this.width += width; }
 
 //measurement function
-Measurement.prototype.toString = function() { return this.width.toString() + "x" + this.length.toString(); }
+Measurement.prototype.toString = function(val)
+{
+	if(val)
+		return this.width.toFixed(2).toString() + "x" + this.length.toFixed(2).toString();
+	else
+		return this.width.toString() + "x" + this.length.toString();
+}
 
 //the button functionality
 function refresh_window()
@@ -964,19 +1047,8 @@ function split_standard_from_needs()
 <table border="0" style="width:276px;">
 	<tr>
 		<td style="text-align:center;">
-			<p>Version 1.8</p>
-			<strong>Maximum precision x/4</strong><br />
-			<table style="width:100%;" border="0">
-				<tr>
-					<td style="text-align:center; width:50%;">1/4 = 0.25</td>
-					<td style="text-align:center; width:50%;">2/4 = 0.5</td>
-				</tr>
-				<tr>
-					<td style="text-align:center; width:50%;">1/2 = 0.5</td>
-					<td style="text-align:center; width:50%;">3/4 = 0.75</td>
-				</tr>
-			</table>
-			<br /><strong>(Width <> Length) Separators</strong><br />
+			<p>Version 2.1</p>
+			<strong>(Width <> Length) Separators</strong><br />
 			<table border="0" style="width:90%; margin-left:auto; margin-right:auto;">
 				<tr>
 					<td style="text-align:center; width:25%;">x</td>
@@ -985,17 +1057,39 @@ function split_standard_from_needs()
 					<td style="text-align:center; width:25%;">:</td>
 				</tr>
 			</table>
-			
-			
+			<i>Decimal part can't be grater then .11 because it represents inches. The program will convert inches to the correct fraction.</i><br />
 			<br /><strong>Valid input examples are:</strong><br />
 			<table style="width:100%;" border="0">
 				<tr>
-					<td style="text-align:center; width:50%;">15.75x7.5</td>
+					<td style="text-align:center; width:50%;">15.7x7.5</td>
 					<td style="text-align:center; width:50%;">15+10</td>
 				</tr>
 				<tr>
-					<td style="text-align:center; width:50%;">10*8.25</td>
+					<td style="text-align:center; width:50%;">10*8.6</td>
 					<td style="text-align:center; width:50%;">13.5:12</td>
+				</tr>
+			</table><br />
+			<strong>(Inch <> Decimal) Reference</strong><br />
+			<table style="width:100%;" border="0">
+				<tr>
+					<td style="text-align:center; width:33%;">1 = .07</td>
+					<td style="text-align:center; width:33%;">5 = .42</td>
+					<td style="text-align:center; width:33%;">9 = .75</td>
+				</tr>
+				<tr>
+					<td style="text-align:center; width:33%;">2 = .17</td>
+					<td style="text-align:center; width:33%;">6 = .5</td>
+					<td style="text-align:center; width:33%;">10 = .83</td>
+				</tr>
+				<tr>
+					<td style="text-align:center; width:33%;">3 = .25</td>
+					<td style="text-align:center; width:33%;">7 = .58</td>
+					<td style="text-align:center; width:33%;">11 = .92</td>
+				</tr>
+				<tr>
+					<td style="text-align:center; width:33%;">4 = .33</td>
+					<td style="text-align:center; width:33%;">8 = .67</td>
+					<td style="text-align:center; width:33%;"><br /></td>
 				</tr>
 			</table>
 			<br />
