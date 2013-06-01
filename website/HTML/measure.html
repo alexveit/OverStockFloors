@@ -305,165 +305,152 @@ function calc_steps()
 		}
 	}
 	
-	var measure = new Measurement("12x" + val);
+	var measure = new Measurement("12x" + val, true);
 	standard.push(measure);
 	standard_inv.push(measure);
 }
-
 //calculate every thing
 function calc_totals()
 {
 	var ordered_needs = get_ordered_needs();
 
 	accounted_for = new Array();
-	
-	var remaining_w = 12.0;
-	
-	var length = ordered_needs[0].length;
-	
-	var x = 0.0;
-	var y = 0.0;
-	
+
+	var grid = new Array(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+
 	var good = false;
+
+	var level = 0;
+
 	while(!good)
-	{
+	{	
 		for(var i = 0; i < ordered_needs.length; i++)
 		{
-			if(ordered_needs[i].width <= remaining_w)
+			var index_from_left = get_index_from_left(grid,level);
+			if(index_from_left == 0)
 			{
-				remaining_w -= ordered_needs[i].width;
-				
-				ordered_needs[i].x = x;
-				ordered_needs[i].y = y;
-				
-				accounted_for.push(ordered_needs[i]);
-				
-				x += ordered_needs[i].width;
-				
-				ordered_needs.splice(i, 1);
-				i--;
-			}
-		}
-		
-		if(ordered_needs.length == 0)
-		{
-			y = get_max_length(accounted_for);
-			good = true;
-		}
-		else
-		{
-			var last_account = accounted_for[accounted_for.length - 1];
-			
-			for(var i = accounted_for.length - 1; i >= 0; i--)
-			{
-				remaining_w += accounted_for[i].width;
-				for(var j = 0; j < ordered_needs.length; j++)
+				level = 0;
+				var max_index = get_max_index(grid);
+				if(max_index != 0)
 				{
-					if(ordered_needs[j].width <= remaining_w)
+					if(ordered_needs[i].width > max_index)
 					{
-						if((last_account.length + last_account.y) <= accounted_for[i].length)
+						var max = get_max(grid);
+						for(var q = 0; q < max_index; q++)
 						{
-							ordered_needs[j].x = 12 - remaining_w;
-							ordered_needs[j].y = accounted_for[i].length;
-							
-							last_account = ordered_needs[j];
-							
-							accounted_for.push(last_account);
-
-							ordered_needs.splice(j, 1);
-							j--;
+							grid[q] = max;
 						}
 					}
 				}
 			}
-			
-			y = get_max_length(accounted_for);
-			x = 0.0;
-			
-			if(ordered_needs.length == 0)
-				good = true;
+			if(ordered_needs[i].width <= (12.0-index_from_left))
+			{
+				var len = 0;
+				var x = index_from_left;
+				var y = grid[index_from_left];
+
+				for(var j = index_from_left, k = 0; k < ordered_needs[i].width; j++, k++)
+				{
+					if(k == 0)
+					{
+						grid[j] += parseFloat(ordered_needs[i].length);
+						len = grid[j];
+					}
+					else
+					{
+						grid[j] = len;
+					}
+				}
+
+				ordered_needs[i].x = x;
+				ordered_needs[i].y = y;
+
+				accounted_for.push(new Measurement(ordered_needs[i]));
+
+				ordered_needs.splice(i, 1);
+				i--;
+			}	
 		}
+
+		if(ordered_needs.length == 0)
+			good = true;
+
+		level++;
 	}
-	
-	return y;
+
+	return get_max(grid);
 }
 
-//calculate every thing inv
+//calculate every thing
 function calc_totals_inv()
 {
 	var ordered_needs_inv = get_ordered_needs_inv();
 
 	accounted_for_inv = new Array();
-	
-	var remaining_w = 12.0;
-	
-	var length = ordered_needs_inv[0].length;
-	
-	var x = 0.0;
-	var y = 0.0;
-	
+
+	var grid = new Array(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
+
 	var good = false;
+
+	var level = 0;
+
 	while(!good)
-	{
+	{	
 		for(var i = 0; i < ordered_needs_inv.length; i++)
 		{
-			if(ordered_needs_inv[i].width <= remaining_w)
+			var index_from_left = get_index_from_left(grid,level);
+			if(index_from_left == 0)
 			{
-				remaining_w -= ordered_needs_inv[i].width;
-				
-				ordered_needs_inv[i].x = x;
-				ordered_needs_inv[i].y = y;
-				
-				accounted_for_inv.push(ordered_needs_inv[i]);
-				
-				x += ordered_needs_inv[i].width;
-				
-				ordered_needs_inv.splice(i, 1);
-				i--;
-			}
-		}
-		
-		if(ordered_needs_inv.length == 0)
-		{
-			y = get_max_length(accounted_for_inv);
-			good = true;
-		}
-		else
-		{
-			var last_account = accounted_for_inv[accounted_for_inv.length - 1];
-			
-			for(var i = accounted_for_inv.length - 1; i >= 0; i--)
-			{
-				remaining_w += accounted_for_inv[i].width;
-				for(var j = 0; j < ordered_needs_inv.length; j++)
+				level = 0;
+				var max_index = get_max_index(grid);
+				if(max_index != 0)
 				{
-					if(ordered_needs_inv[j].width <= remaining_w)
+					if(ordered_needs_inv[i].width > max_index)
 					{
-						if((last_account.length + last_account.y) <= accounted_for_inv[i].length)
+						var max = get_max(grid);
+						for(var q = 0; q < max_index; q++)
 						{
-							ordered_needs_inv[j].x = 12 - remaining_w;
-							ordered_needs_inv[j].y = accounted_for_inv[i].length;
-							
-							last_account = ordered_needs_inv[j];
-							
-							accounted_for_inv.push(last_account);
-
-							ordered_needs_inv.splice(j, 1);
-							j--;
+							grid[q] = max;
 						}
 					}
 				}
 			}
-			
-			y = get_max_length(accounted_for_inv);
-			x = 0.0;
-			
-			if(ordered_needs_inv.length == 0)
-				good = true;
+			if(ordered_needs_inv[i].width <= (12.0-index_from_left))
+			{
+				var len = 0;
+				var x = index_from_left;
+				var y = grid[index_from_left];
+
+				for(var j = index_from_left, k = 0; k < ordered_needs_inv[i].width; j++, k++)
+				{
+					if(k == 0)
+					{
+						grid[j] += parseFloat(ordered_needs_inv[i].length);
+						len = grid[j];
+					}
+					else
+					{
+						grid[j] = len;
+					}
+				}
+
+				ordered_needs_inv[i].x = x;
+				ordered_needs_inv[i].y = y;
+
+				accounted_for_inv.push(new Measurement(ordered_needs_inv[i]));
+
+				ordered_needs_inv.splice(i, 1);
+				i--;
+			}	
 		}
+
+		if(ordered_needs_inv.length == 0)
+			good = true;
+
+		level++;
 	}
-	
-	return y;
+
+	return get_max(grid);
 }
 
 //function called by user to initial calculations
@@ -554,12 +541,7 @@ function consolidate_standards()
 			standard.push(new Measurement(needs[i]));
 			needs.splice(i, 1);
 		}
-		else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
-		{
-			standard.push(new Measurement(needs[i]));
-			needs.splice(i, 1);
-		}
-		else if(needs[i].width > 12.0)
+		else if(needs[i].width >= 12.0)
 		{
 			var good = false;
 			while(!good)
@@ -567,20 +549,16 @@ function consolidate_standards()
 				if(round && needs[i].width >= round_val && needs[i].width < 12.0)
 				{
 					needs[i].width = 12;
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+					standard.push(new Measurement("12x" +  needs[i].length.toString(), true));
 					needs.splice(i, 1);
 					good = true;
 				}
-				else if(needs[i].width >= 12.0 && needs[i].width < 13.0)
+				else if(needs[i].width >= 12.0)
 				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
-					needs.splice(i, 1);
-					good = true;
-				}
-				else if(needs[i].width > 12.0)
-				{
-					standard.push(new Measurement(needs[i].width.toString() + "x" + needs[i].length.toString()));
+					standard.push(new Measurement("12x" + needs[i].length.toString(), true));
 					needs[i].width -= 12;
+					if(needs[i].width == 0)
+						needs.splice(i, 1);
 				}
 				else
 				{
@@ -600,12 +578,7 @@ function consolidate_standards()
 			standard_inv.push(new Measurement(needs_inv[i]));
 			needs_inv.splice(i, 1);
 		}
-		else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
-		{
-			standard_inv.push(new Measurement(needs_inv[i]));
-			needs_inv.splice(i, 1);
-		}
-		else if(needs_inv[i].width > 12.0)
+		else if(needs_inv[i].width >= 12.0)
 		{
 			var good = false;
 			while(!good)
@@ -613,20 +586,16 @@ function consolidate_standards()
 				if(round && needs_inv[i].width >= round_val && needs_inv[i].width < 12.0)
 				{
 					needs_inv[i].width = 12;
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
+					standard_inv.push(new Measurement("12x" + needs_inv[i].length.toString(), true));
 					needs_inv.splice(i, 1);
 					good = true;
 				}
-				else if(needs_inv[i].width >= 12.0 && needs_inv[i].width < 13.0)
+				else if(needs_inv[i].width >= 12.0)
 				{
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
-					needs_inv.splice(i, 1);
-					good = true;
-				}
-				else if(needs_inv[i].width > 12.0)
-				{
-					standard_inv.push(new Measurement(needs_inv[i].width.toString() + "x" + needs_inv[i].length.toString()));
+					standard_inv.push(new Measurement("12x" + needs_inv[i].length.toString(),true));
 					needs_inv[i].width -= 12;
+					if(needs_inv[i].width == 0)
+						needs_inv.splice(i, 1);
 				}
 				else
 				{
@@ -717,6 +686,71 @@ function extras_click(cb)
 	}
 }
 
+//figure out the the leftmost X coordinate that will fit
+//without having to add length to the needs
+function get_index_from_left(grid, level)
+{
+	var val = grid[0];
+
+	var lowest = new Array();
+
+	lowest.push(new index_class(val,0));
+
+	for(var i = 0; i < grid.length; i++)
+	{
+		if(grid[i] != val)
+		{
+			val = grid[i]
+			lowest.push(new index_class(val,i));
+		}
+	}
+
+	lowest.sort(function(a,b) { return a.val - b.val; } );
+
+	var index = 0;
+
+	if(level < lowest.length)
+		index = lowest[level].index;
+
+	return index;
+}
+
+//get the largest number in the
+//grid array
+function get_max(grid)
+{
+	var max = grid[0];
+
+	for(var i = 0; i < grid.length; i++)
+	{
+		if(grid[i] > max)
+		{
+			max = grid[i];
+		}
+	}
+
+	return max;
+}
+
+//get theindex for the largest 
+//number in the grid array
+function get_max_index(grid)
+{
+	var max = grid[0];
+	var index = 0;
+
+	for(var i = 0; i < grid.length; i++)
+	{
+		if(grid[i] > max)
+		{
+			index = i;
+			max = grid[i];
+		}
+	}
+
+	return index;
+}
+
 function get_max_length(acc_for)
 {
 	var length = acc_for[0].length;
@@ -754,6 +788,25 @@ function get_ordered_needs_inv()
 	ordered_needs_inv.sort(function(a,b) { return b.length - a.length; } );
 
 	return ordered_needs_inv;
+}
+
+function get_real_fraction(val)
+{
+	var ret = "07";
+	switch(val)
+	{
+	case "2": ret = "17"; break;
+	case "3": ret = "25"; break;
+	case "4": ret = "33"; break;
+	case "5": ret = "42"; break;
+	case "6": ret = "50"; break;
+	case "7": ret = "58"; break;
+	case "8": ret = "67"; break;
+	case "9": ret = "75"; break;
+	case "10": ret = "83"; break;
+	case "11": ret = "92"; break;
+	}
+	return ret;
 }
 
 //a class to represent a index type
@@ -797,10 +850,10 @@ function load()
 //debut testing purposes
 function load_debub_input()
 {	
-	//var data = "15.6x14+3x4+3x2+18x15.6+12x13.3+2x13+4.6x4+11x13.6+11x12+7x2+7.3x6.6";
+	var data = "15.6x14+3x4+3x2+18x15.6+12x13.3+2x13+4.6x4+11x13.6+11x12+7x2+7.3x6.6";
 	//var data = "14x15.6+4x3+2x3+15.6x18+13.3x12+13x2+4x4.6+13.6x11+12x11+2x7+6.6x7.3";
 	
-	var data = "15.3x10.8+8.7x13.7+14x17.9+13x13.7+23x17.5+10.4x7.10+3x5+8x8";
+	//var data = "15.3x10.8+8.7x13.7+14x17.9+13x13.7+23x17.5+10.4x7.10+3x5+8x8";
 	
 	var n = data.split("+");
 
@@ -812,27 +865,8 @@ function load_debub_input()
 	//document.getElementById("round").checked = true;
 }
 
-function get_real_fraction(val)
-{
-	var ret = "07";
-	switch(val)
-	{
-	case "2": ret = "17"; break;
-	case "3": ret = "25"; break;
-	case "4": ret = "33"; break;
-	case "5": ret = "42"; break;
-	case "6": ret = "50"; break;
-	case "7": ret = "58"; break;
-	case "8": ret = "67"; break;
-	case "9": ret = "75"; break;
-	case "10": ret = "83"; break;
-	case "11": ret = "92"; break;
-	}
-	return ret;
-}
-
 //measurement class
-function Measurement(input)
+function Measurement(input, simple)
 {
 	if (typeof(input)==='string')
 	{
@@ -846,33 +880,40 @@ function Measurement(input)
 		else if(input.indexOf(":") !== -1)
 			n = input.split(":");
 		
-		var w;
-		var l;
-		
-		if(n[0].indexOf(".") !== -1)
+		if(!simple)
 		{
-			w = n[0].split(".");
-			w[1] = get_real_fraction(w[1]);
-			this.width = parseFloat(w[0] + "." + w[1]);
+			var w;
+			var l;
+			
+			if(n[0].indexOf(".") !== -1)
+			{
+				w = n[0].split(".");
+				w[1] = get_real_fraction(w[1]);
+				this.width = parseFloat(w[0] + "." + w[1]);
+			}
+			else
+			{
+				this.width = parseFloat(n[0]);
+			}
+			
+			if(n[1].indexOf(".") !== -1)
+			{
+				l = n[1].split(".");
+				l[1] = get_real_fraction(l[1]);
+				this.length = parseFloat(l[0] + "." + l[1]);
+			}
+			else
+			{
+				this.length = parseFloat(n[1]);
+			}
 		}
 		else
 		{
 			this.width = parseFloat(n[0]);
-		}
-		
-		if(n[1].indexOf(".") !== -1)
-		{
-			l = n[1].split(".");
-			l[1] = get_real_fraction(l[1]);
-			this.length = parseFloat(l[0] + "." + l[1]);
-		}
-		else
-		{
 			this.length = parseFloat(n[1]);
+			this.x = 0.0;
+			this.y = 0.0;
 		}
-			
-		this.x = 0.0;
-		this.y = 0.0;
 	}
 	else
 	{
@@ -890,9 +931,9 @@ Measurement.prototype.add_width = function(width) { this.width += width; }
 Measurement.prototype.toString = function(val)
 {
 	if(val)
-		return this.width.toFixed(2).toString() + "x" + this.length.toFixed(2).toString();
+		return this.width.toFixed(2) + "x" + this.length.toFixed(2);
 	else
-		return this.width.toString() + "x" + this.length.toString();
+		return this.width + "x" + this.length;
 }
 
 //the button functionality
@@ -933,14 +974,15 @@ function split_standard_from_needs()
 			var good = false;
 			while(!good)
 			{
-				if(temp_w > 12.0)
+				if(temp_w >= 12.0)
 				{
-					standard.push(new Measurement("12x" + mymeasurements[i].length.toString()));
+					standard.push(new Measurement("12x" + mymeasurements[i].length.toString(), true));
 					temp_w -= 12;
 				}
 				else
 				{
-					needs.push(new Measurement(temp_w.toString() + "x" + mymeasurements[i].length.toString()));
+					if(temp_w != 0)
+						needs.push(new Measurement(temp_w + "x" + mymeasurements[i].length.toString(),true));
 					good = true;
 				}
 			}
@@ -961,14 +1003,15 @@ function split_standard_from_needs()
 			var good = false;
 			while(!good)
 			{
-				if(temp_w > 12.0)
+				if(temp_w >= 12.0)
 				{
-					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString()));
+					standard_inv.push(new Measurement("12x" + mymeasurements_inv[i].length.toString(),true));
 					temp_w -= 12;
 				}
 				else
 				{
-					needs_inv.push(new Measurement(temp_w.toString() + "x" + mymeasurements_inv[i].length.toString()));
+					if(temp_w != 0)
+						needs_inv.push(new Measurement(temp_w + "x" + mymeasurements_inv[i].length.toString(), true));
 					good = true;
 				}
 			}
@@ -984,7 +1027,7 @@ function split_standard_from_needs()
 <table border="0" style="width:276px;">
 	<tr>
 		<td style="text-align:center;">
-			<p>Version 2.2</p>
+			<p>Version 2.4</p>
 			<strong>(Width <> Length) Separators</strong><br />
 			<table border="0" style="width:90%; margin-left:auto; margin-right:auto;">
 				<tr>
