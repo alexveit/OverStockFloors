@@ -34,10 +34,9 @@ function add_measurement(val)
 	newNode.appendChild(newContent);
 
 	document.body.insertBefore(newNode, my_ul);
-	document.forms["myForm"]["measurement"].value = "";
-
-	document.getElementById("measurement").focus();
-
+	
+	//document.forms["myForm"]["measurement"].value = "";
+	//document.getElementById("measurement").focus();
 }
 
 function add_measurements_inv()
@@ -191,7 +190,7 @@ function add_table(max,stan,nee,acc_for)
 			extras = true;
 			str += "<i>pad</i>";
 			var val = document.forms["myForm"]["padcost"].value;
-			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			if (!(isWhitespaceNotEmpty(val)))
 			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
 			}
@@ -207,7 +206,7 @@ function add_table(max,stan,nee,acc_for)
 				str += "<i>install</i>";
 			}
 			var val = document.forms["myForm"]["installcost"].value;
-			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			if (!(isWhitespaceNotEmpty(val)))
 			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
 			}
@@ -223,13 +222,13 @@ function add_table(max,stan,nee,acc_for)
 				str += "<i>ripout</i>";
 			}
 			var val = document.forms["myForm"]["ripoutcost"].value;
-			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
+			if (!(isWhitespaceNotEmpty(val)))
 			{
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
 			}
 		}
 		
-		if (!(coooos=null || coooos=="" || isWhitespaceNotEmpty(coooos)))
+		if (!(isWhitespaceNotEmpty(coooos)))
 		{
 			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;			
 		}
@@ -280,7 +279,7 @@ function calc_steps()
 {
 	var value = document.forms["myForm"]["steps"].value;
 
-	if (value==null || value=="" || isWhitespaceNotEmpty(value))
+	if (isWhitespaceNotEmpty(value))
 	{
 		return false;
 	}
@@ -519,6 +518,16 @@ function check_device()
 		
 		document.getElementById("spaceforcanvas").outerHTML = "<div id=\"spaceforcanvas\" style=\"position:absolute; left:600px; top:10px;\" ><div style=\"width:276px;\"><div id=\"diagram_text\" style=\"text-align:center;\"></div><canvas id=\"myCanvas\" width=\"276\" height=\"100\" >Your browser does not support the HTML5 canvas tag.</canvas></div></div>";
 	}
+}
+
+function clear_inputs()
+{
+	document.forms["myForm"]["wf"].value = "";
+	document.forms["myForm"]["wi"].value = "";
+	document.forms["myForm"]["lf"].value = "";
+	document.forms["myForm"]["li"].value = "";
+	
+	document.getElementById("wf").focus();
 }
 
 //combine what ever needs can be combined and 
@@ -831,7 +840,7 @@ function invert_measurement(input)
 }
 
 //check to see if a string is only white spaces
-function isWhitespaceNotEmpty(text) { return text.length > 0 && !/[^\s]/.test(text); }
+function isWhitespaceNotEmpty(text) { return text==null || text=="" || text.length > 0 && !/[^\s]/.test(text); }
 
 //run on load html body
 function load()
@@ -947,13 +956,98 @@ function retrieve_measurement()
 {
 	var val = document.forms["myForm"]["measurement"].value;
 
-	if (val==null || val=="" || isWhitespaceNotEmpty(val))
+	if (isWhitespaceNotEmpty(val))
 	{
 		calculate();
 		return false;
 	}
 
 	add_measurement(val)
+	return val;
+}
+
+//retrieve measuremtn and add it to the list
+function retrieve_measurement_new()
+{
+	var wf = document.forms["myForm"]["wf"].value;
+	var wi = document.forms["myForm"]["wi"].value;
+	var lf = document.forms["myForm"]["lf"].value;
+	var li = document.forms["myForm"]["li"].value;
+
+	
+	if(isWhitespaceNotEmpty(wf) && isWhitespaceNotEmpty(wi))
+	{
+		alert("Invalid width input");
+		return false;
+	}
+	
+	if(isWhitespaceNotEmpty(lf) && isWhitespaceNotEmpty(li))
+	{
+		alert("Invalid length input");
+		return false;
+	}
+	
+	var wfint = parseInt(wf);
+	var wiint = parseInt(wi);
+	
+	if(isNaN(wfint))
+		wfint = 0;
+		
+	if(isNaN(wiint))
+		wiint = 0;
+	
+	while(true)
+	{
+		if(wiint > 11)
+		{
+			wfint++
+			wiint -= 12;
+		}
+		else
+			break;
+	}
+	
+	var val = wfint.toString();
+	
+	if(wiint > 0)
+	{
+		val = val.concat(".");
+		val = val.concat(wiint.toString());
+	}
+	
+	val = val.concat("x");
+	
+	var lfint = parseInt(lf);
+	var liint = parseInt(li);
+	
+	if(isNaN(lfint))
+		lfint = 0;
+		
+	if(isNaN(liint))
+		liint = 0;
+		
+	while(true)
+	{
+		if(liint > 11)
+		{
+			lfint++
+			liint -= 12;
+		}
+		else
+			break;
+	}
+	
+	val = val.concat(lfint.toString());
+	
+	if(liint > 0)
+	{
+		val = val.concat(".");
+		val = val.concat(liint.toString());
+	}
+
+	add_measurement(val)
+	
+	clear_inputs();
 	return val;
 }
 
@@ -1026,9 +1120,9 @@ function split_standard_from_needs()
 <table border="0" style="width:276px;">
 	<tr>
 		<td style="text-align:center;">
-			<p><span style="font-size:200%"><b>Carpet</b></span><br>Version 2.5</p>
-			<strong>(Width <> Length) Separators</strong><br />
-			<table border="0" style="width:90%; margin-left:auto; margin-right:auto;">
+			<p><span style="font-size:200%"><b>Carpet</b></span><br>Version 2.6</p>
+			<!-- <strong>(Width <> Length) Separators</strong><br />
+			<table border="1" style="width:90%; margin-left:auto; margin-right:auto;">
 				<tr>
 					<td style="text-align:center; width:25%;">x</td>
 					<td style="text-align:center; width:25%;">*</td>
@@ -1038,7 +1132,7 @@ function split_standard_from_needs()
 			</table>
 			<i>Decimal part can't be grater then .11 because it represents inches. The program will convert inches to the correct fraction.</i><br />
 			<br /><strong>Valid input examples are:</strong><br />
-			<table style="width:100%;" border="0">
+			<table style="width:100%;" border="1">
 				<tr>
 					<td style="text-align:center; width:50%;">15.7x7.5</td>
 					<td style="text-align:center; width:50%;">15+10</td>
@@ -1047,8 +1141,8 @@ function split_standard_from_needs()
 					<td style="text-align:center; width:50%;">10*8.6</td>
 					<td style="text-align:center; width:50%;">13.5:12</td>
 				</tr>
-			</table><br />
-			<strong>(Inch <> Decimal) Reference</strong><br />
+			</table><br /> -->
+			<!-- <strong>(Inch <> Decimal) Reference</strong><br />
 			<table style="width:100%;" border="0">
 				<tr>
 					<td style="text-align:center; width:33%;">1 = .07</td>
@@ -1071,7 +1165,7 @@ function split_standard_from_needs()
 					<td style="text-align:center; width:33%;"><br /></td>
 				</tr>
 			</table>
-			<br />
+			<br /> -->
 		</td>
 	</tr>
 </table>
@@ -1098,9 +1192,15 @@ function split_standard_from_needs()
 			</select> to 12' on calc.
 		</td>
 	</tr>
-	<tr>
+	<!-- <tr>
 		<td style="text-align:right;  padding-right:4px; width:60%;">W<>L:<input id="measurement" type="text" size="10" onkeypress="return checkEnter(event)" /></td>
 		<td style="text-align:center; width:40%;"><input id="aaaddd" type="button" onclick="retrieve_measurement()" value="    Add    "></td>
+	</tr> -->
+	<tr>
+		<td colspan="2">
+			<input id="wf" type="text" size="1" />'<input id="wi" type="text" size="1" />" X <input id="lf" type="text" size="1" />'<input id="li" type="text" size="1" />"
+			<input id="addbtn" type="button" onclick="retrieve_measurement_new()" value="Add">
+		</td>
 	</tr>
 	<tr>
 		<td style="text-align:right; padding-right:4px;">Step count: <input id="steps" type="text" size="5" onkeypress="return checkEnter(event)"/></td>
