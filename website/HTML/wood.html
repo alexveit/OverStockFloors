@@ -45,8 +45,6 @@ function calculate()
 		else
 			total *= 1.05;*/
 		
-		total *= 1.07;
-		
 		var html = '<table border="0" style="width:276px;">';
 		html = html.concat('<tr><td style="text-align:center; width:50%;" colspan="2">');
 		html = html.concat('<strong>Totals</strong>');
@@ -368,7 +366,7 @@ function retrieve_measurement()
 		<td style="text-align:center; width:40%;"><input id="aaaddd" type="button" onclick="retrieve_measurement()" value="    Add    "></td>
 	</tr>
 	<tr>
-		<td style="text-align:right; padding-right:4px;">Cost: <input id="cost" type="text" size="5" onkeypress="return checkEnter(event)"/></td>
+		<td style="text-align:right; padding-right:4px;"><br> <!-- Cost: <input id="cost" type="text" size="5" onkeypress="return checkEnter(event)"/> --> </td>
 		<td style="text-align:center;"><input type="button" onclick="calculate()" value="Calculate"></td>
 	</tr>
 

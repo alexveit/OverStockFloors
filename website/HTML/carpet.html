@@ -105,11 +105,7 @@ function add_table(max,stan,nee,acc_for)
 		html = html.concat("</tr>");
 	}
 
-	var len = 0.0;
-	for(var i = 0; i < stan.length; i++)
-	{
-		len += stan[i].length;
-	}
+	var len = get_total_standard_leng(stan);
 
 	if(len > 0 || max > 0)
 	{
@@ -475,7 +471,7 @@ function calculate()
 	if(max == 0 || max_inv == 0)
 		return;
 	
-	if(max < max_inv)
+	if((max + get_total_standard_leng(standard))< (max_inv  + get_total_standard_leng(standard_inv)))
 	{
 		add_table(max, standard, needs, accounted_for);
 		draw_needs(max, accounted_for);	
@@ -751,15 +747,6 @@ function get_max_index(grid)
 	return index;
 }
 
-function get_max_length(acc_for)
-{
-	var length = acc_for[0].length;
-	var last = acc_for[acc_for.length-1].y + acc_for[acc_for.length-1].length;
-	if(last > length)
-		length = last;
-	return length;
-}
-
 //return a new array of sorted needs
 function get_ordered_needs()
 {
@@ -807,6 +794,16 @@ function get_real_fraction(val)
 	case "11": ret = "92"; break;
 	}
 	return ret;
+}
+
+function get_total_standard_leng(stan)
+{
+	var len = 0.0;
+	for(var i = 0; i < stan.length; i++)
+	{
+		len += stan[i].length;
+	}
+	return len;
 }
 
 //a class to represent a index type
