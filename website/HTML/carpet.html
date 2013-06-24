@@ -849,7 +849,7 @@ function load()
 	mymeasurements_inv = new Array();
 	displayed_invs = false;
 	check_device();
-	//load_debub_input();
+	load_debub_input();
 	document.getElementById("measurement").focus();	
 }
 
@@ -951,6 +951,7 @@ function refresh_window()
 	window.location.href = val;
 }
 
+//this is unused
 //retrieve measuremtn and add it to the list
 function retrieve_measurement()
 {

@@ -20,9 +20,10 @@ function add_measurement(val)
 	newNode.appendChild(newContent);
 
 	document.body.insertBefore(newNode, my_ul);
-	document.forms["myForm"]["measurement"].value = "";
-
-	document.getElementById("measurement").focus();
+	
+	//unused
+	//document.forms["myForm"]["measurement"].value = "";
+	//document.getElementById("measurement").focus();
 
 }
 
@@ -105,6 +106,16 @@ function check_device()
 	{
 		document.getElementById("spacefortable").outerHTML = "<div id=\"spacefortable\" style=\"position:absolute; left:300px; top:10px;\"><div id=\"addtable\"></div></div>";
 	}
+}
+
+function clear_inputs()
+{
+	document.forms["myForm"]["wf"].value = "";
+	document.forms["myForm"]["wi"].value = "";
+	document.forms["myForm"]["lf"].value = "";
+	document.forms["myForm"]["li"].value = "";
+	
+	document.getElementById("wf").focus();
 }
 
 //handle checkbox click
@@ -281,6 +292,91 @@ function retrieve_measurement()
 	return val;
 }
 
+//retrieve measuremtn and add it to the list
+function retrieve_measurement_new()
+{
+	var wf = document.forms["myForm"]["wf"].value;
+	var wi = document.forms["myForm"]["wi"].value;
+	var lf = document.forms["myForm"]["lf"].value;
+	var li = document.forms["myForm"]["li"].value;
+
+	
+	if(isWhitespaceNotEmpty(wf) && isWhitespaceNotEmpty(wi))
+	{
+		alert("Invalid width input");
+		return false;
+	}
+	
+	if(isWhitespaceNotEmpty(lf) && isWhitespaceNotEmpty(li))
+	{
+		alert("Invalid length input");
+		return false;
+	}
+	
+	var wfint = parseInt(wf);
+	var wiint = parseInt(wi);
+	
+	if(isNaN(wfint))
+		wfint = 0;
+		
+	if(isNaN(wiint))
+		wiint = 0;
+	
+	while(true)
+	{
+		if(wiint > 11)
+		{
+			wfint++
+			wiint -= 12;
+		}
+		else
+			break;
+	}
+	
+	var val = wfint.toString();
+	
+	if(wiint > 0)
+	{
+		val = val.concat(".");
+		val = val.concat(wiint.toString());
+	}
+	
+	val = val.concat("x");
+	
+	var lfint = parseInt(lf);
+	var liint = parseInt(li);
+	
+	if(isNaN(lfint))
+		lfint = 0;
+		
+	if(isNaN(liint))
+		liint = 0;
+		
+	while(true)
+	{
+		if(liint > 11)
+		{
+			lfint++
+			liint -= 12;
+		}
+		else
+			break;
+	}
+	
+	val = val.concat(lfint.toString());
+	
+	if(liint > 0)
+	{
+		val = val.concat(".");
+		val = val.concat(liint.toString());
+	}
+
+	add_measurement(val)
+	
+	clear_inputs();
+	return val;
+}
+
 </script>
 </head>
 
@@ -289,8 +385,8 @@ function retrieve_measurement()
 <table border="0" style="width:276px;">
 	<tr>
 		<td style="text-align:center;">
-			<p><span style="font-size:200%"><b>Wood</b></span><br>Version 1.0</p>
-			<strong>(Width <> Length) Separators</strong><br />
+			<p><span style="font-size:200%"><b>Wood</b></span><br>Version 1.1</p>
+			<!-- <strong>(Width <> Length) Separators</strong><br />
 			<table border="0" style="width:90%; margin-left:auto; margin-right:auto;">
 				<tr>
 					<td style="text-align:center; width:25%;">x</td>
@@ -334,7 +430,7 @@ function retrieve_measurement()
 					<td style="text-align:center; width:33%;"><br /></td>
 				</tr>
 			</table>
-			<br />
+			<br /> -->
 		</td>
 	</tr>
 </table>
@@ -361,15 +457,20 @@ function retrieve_measurement()
 			</select> to 12' on calc.
 		</td>
 	</tr>
-	<tr>
+	<!-- <tr>
 		<td style="text-align:right;  padding-right:4px; width:60%;">W<>L:<input id="measurement" type="text" size="10" onkeypress="return checkEnter(event)" /></td>
 		<td style="text-align:center; width:40%;"><input id="aaaddd" type="button" onclick="retrieve_measurement()" value="    Add    "></td>
+	</tr> -->
+	<tr>
+		<td colspan="2">
+			<input id="wf" type="text" size="1" />'<input id="wi" type="text" size="1" />" X <input id="lf" type="text" size="1" />'<input id="li" type="text" size="1" />"
+			<input id="addbtn" type="button" onclick="retrieve_measurement_new()" value="Add">
+		</td>
 	</tr>
 	<tr>
 		<td style="text-align:right; padding-right:4px;"><br> <!-- Cost: <input id="cost" type="text" size="5" onkeypress="return checkEnter(event)"/> --> </td>
 		<td style="text-align:center;"><input type="button" onclick="calculate()" value="Calculate"></td>
 	</tr>
-
 	<tr>
 		<td style="text-align:right;"><br></td>
 		<td style="text-align:center;"><input type="button" onclick="refresh_window()" value="   Clear   "></td>
