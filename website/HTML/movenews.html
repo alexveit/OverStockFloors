@@ -1,7 +1,10 @@
-
-<script type="text/javascript">
-
-	var userWidth = window.screen.width;
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<script type="text/javascript">// <![CDATA[
+var userWidth = window.screen.width;
 	
 	var xorvar = true;
 	
@@ -26,7 +29,7 @@
 		var tim = setTimeout("moveLeft()",5);  // 20 controls the speed
 		lft = lft-5;  // move by 5 pixels
 		pp.style.left = lft+"px";
-		if (lft < -180) // left edge of image past the right edge of screen
+		if (lft < -148) // left edge of image past the right edge of screen
 		{
 			//pp.style.left = -200;  // back to the left
 			clearTimeout(tim);
@@ -45,18 +48,12 @@
 		}
 		xorvar = !xorvar;
 	}
-	
-</script>
-
-
-<table border="0" id="newsimage" style="position:absolute; left:0px; top:150px; z-index:1000;">
-	<tbody>
-		<tr>
-			<td><a href="http://www.overstockfloorsetc.com/index.php?route=product/category&path=118">
-					<img src="images/news1.gif" alt="News" width="182" height="160">
-				</a>
-			</td>
-			<td><img src="images/left_arrow2.png" name="image_name"  onclick = "move()" onmouseover="image_name.width='30';image_name.height='30';" onmouseout="image_name.width='18';image_name.height='18';"></td>
-		</tr>
-	</tbody>
+// ]]></script>
+<table border="0" id="newsimage" style="position: absolute; left: 0px; top: 158px; z-index: 1000;">
+	<tr>
+	<td><a href="http://www.overstockfloorsetc.com/index.php?route=product/category&amp;path=118"><img src="images/news1.gif" alt="News" width="145" height="128" /> </a></td>
+	<td><img src="images/left_arrow2.png" name="image_name" onclick="move()" onmouseover="image_name.width='30';image_name.height='30';" onmouseout="image_name.width='18';image_name.height='18';" /></td>
+	</tr>
 </table>
+</body>
+</html>
