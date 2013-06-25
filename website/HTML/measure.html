@@ -132,8 +132,6 @@ function add_table(max,in_needs,in_standard)
 		html = html.concat("<tr><td style=\"text-align:right; width:25%;\"><strong>Waist:</strong></td><td style=\"background-color:red; width:75%;\"><table border=\"0\" style=\"width:100%;\"><tr><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + waist + " ft&sup2</strong></span></td><td style=\"width:50%; text-align:right;\"><span style=\"color:white;\"><strong>" + sq_yd.toFixed(2) + " yd&sup2</strong></span></td></tr></table></td></tr>");
 		
 		
-		var coooos = document.forms["myForm"]["cost"].value;
-		
 		var cost = 0.0;
 
 		if(document.getElementById("pad").checked)
@@ -156,6 +154,8 @@ function add_table(max,in_needs,in_standard)
 			if (!(val==null || val=="" || isWhitespaceNotEmpty(val)))
 				cost += (t_sqr_ft * parseFloat(val))/9.0;
 		}
+		
+		var coooos = document.forms["myForm"]["cost"].value;
 		
 		if (!(coooos=null || coooos=="" || isWhitespaceNotEmpty(coooos)))
 			cost += (t_sqr_ft * parseFloat(document.forms["myForm"]["cost"].value))/9.0;
