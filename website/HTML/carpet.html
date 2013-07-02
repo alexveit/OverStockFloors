@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <script>
 
 var needs;
@@ -316,7 +315,7 @@ function calc_totals()
 	var good = false;
 
 	var level = 0;
-
+	var remaining = 12.0;
 	while(!good)
 	{	
 		for(var i = 0; i < ordered_needs.length; i++)
@@ -338,6 +337,7 @@ function calc_totals()
 					}
 				}
 			}
+			remaining = (12.0-index_from_left);
 			if(ordered_needs[i].width <= (12.0-index_from_left))
 			{
 				var len = 0;
@@ -361,7 +361,8 @@ function calc_totals()
 				ordered_needs[i].y = y;
 
 				accounted_for.push(new Measurement(ordered_needs[i]));
-
+				
+				remaining -= ordered_needs_inv[i].width;
 				ordered_needs.splice(i, 1);
 				i--;
 			}	
@@ -369,8 +370,8 @@ function calc_totals()
 
 		if(ordered_needs.length == 0)
 			good = true;
-
-		level++;
+		if(remaining > 0)
+			level++;
 	}
 
 	return get_max(grid);
@@ -388,7 +389,7 @@ function calc_totals_inv()
 	var good = false;
 
 	var level = 0;
-
+	var remaining = 12.0;
 	while(!good)
 	{	
 		for(var i = 0; i < ordered_needs_inv.length; i++)
@@ -410,12 +411,13 @@ function calc_totals_inv()
 					}
 				}
 			}
-			if(ordered_needs_inv[i].width <= (12.0-index_from_left))
+			remaining = (12.0-index_from_left);
+			if(ordered_needs_inv[i].width <= remaining)
 			{
 				var len = 0;
 				var x = index_from_left;
 				var y = grid[index_from_left];
-
+				
 				for(var j = index_from_left, k = 0; k < ordered_needs_inv[i].width; j++, k++)
 				{
 					if(k == 0)
@@ -433,16 +435,17 @@ function calc_totals_inv()
 				ordered_needs_inv[i].y = y;
 
 				accounted_for_inv.push(new Measurement(ordered_needs_inv[i]));
-
+				
+				remaining -= ordered_needs_inv[i].width;
 				ordered_needs_inv.splice(i, 1);
-				i--;
+				i--;	
 			}	
 		}
 
 		if(ordered_needs_inv.length == 0)
 			good = true;
-
-		level++;
+		if(remaining > 0)
+			level++;
 	}
 
 	return get_max(grid);
@@ -482,8 +485,8 @@ function calculate()
 		add_measurements_inv();
 	}
 	
-	document.getElementById('measurement').disabled = true;
-	document.getElementById('aaaddd').disabled = true;
+	//document.getElementById('measurement').disabled = true;
+	document.getElementById('addbtn').disabled = true;
 }
 
 //handle key events
@@ -756,6 +759,27 @@ function get_max_index(grid)
 	return index;
 }
 
+function get_max_from_accounted(accounted)
+{
+	if(accounted.length > 0)
+	{
+		var max = accounted[0].length;
+		var index = 0;
+		
+		for(var i = 0; i < accounted.length; i++)
+		{
+			if(accounted[i].length > max)
+			{
+				max = accounted[i].length;
+				index = i;
+			}
+		}
+		
+		
+		return accounted[index];
+	}
+}
+
 //return a new array of sorted needs
 function get_ordered_needs()
 {
@@ -850,7 +874,7 @@ function load()
 	displayed_invs = false;
 	check_device();
 	load_debub_input();
-	document.getElementById("measurement").focus();	
+	//document.getElementById("measurement").focus();	
 }
 
 //debut testing purposes
@@ -861,7 +885,9 @@ function load_debub_input()
 	
 	//var data = "15.3x10.8+8.7x13.7+14x17.9+13x13.7+23x17.5+10.4x7.10+3x5+8x8";
 	
-	var data = "10x12.3+3.6x6+10x10.3+4.3x5.3+13.3x13.9+3x2";
+	//var data = "10x12.3+3.6x6+10x10.3+4.3x5.3+13.3x13.9+3x2";
+	
+	var data = "11.6x13+5.3x4.3+9.6x4.9+4.6x4+9.6x9+4.3x3+24.3x14.6+9.6x4+10x5+9.3x5.6";
 	
 	var n = data.split("+");
 
@@ -943,6 +969,8 @@ Measurement.prototype.toString = function(val)
 	else
 		return this.width + "x" + this.length;
 }
+
+Measurement.prototype.width_plus_x = function() { return this.x + this.width; }
 
 //the button functionality
 function refresh_window()
